@@ -3,6 +3,7 @@ import { ErrorMessage } from "../components/common/ErrorMessage";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { SearchBar } from "../components/search/SearchBar";
 import { SearchResultsGrid } from "../components/search/SearchResultsGrid";
+import { VoiceSearchButton } from "../components/search/VoiceSearchButton";
 import { useMediaSearch } from "../hooks/useMediaSearch";
 
 /**
@@ -24,8 +25,11 @@ export function HomePage() {
         Søk etter filmer og serier du vil legge til i watchlisten din.
       </p>
 
-      <div className="mt-4">
-        <SearchBar onSubmit={handleSearch} />
+      <div className="mt-4 flex items-start gap-2">
+        <div className="flex-1">
+          <SearchBar onSubmit={handleSearch} />
+        </div>
+        <VoiceSearchButton onResult={handleSearch} />
       </div>
 
       <div className="mt-6">
