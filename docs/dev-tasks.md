@@ -11,7 +11,7 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 | 1 — Prosjektoppsett | ✅ Ferdig 2026-07-17 |
 | 2 — Domenemodell og MockMediaProvider | ✅ Ferdig 2026-07-17 |
 | 3 — Cache-lag | ✅ Ferdig 2026-07-17 |
-| 4 — App-skjelett | ☐ Ikke startet |
+| 4 — App-skjelett | ✅ Ferdig 2026-07-17 |
 | 5 — Søkeside | ☐ Ikke startet |
 | 6 — Detaljside | ☐ Ikke startet |
 | 7 — Watchlist-funksjonalitet | ☐ Ikke startet |
@@ -47,9 +47,9 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 - [x] **Definition of done:** Enhetstester dekker: set/get-roundtrip, TTL-utløp, quota-exceeded-eviction (eldste/utløpte først), at cache-navnerom er adskilt fra watchlist-navnerom, at korrupt/feilformet entry behandles som miss, in-memory-fallback når `localStorage` er utilgjengelig, og at `CachingMediaProvider` hopper over indre kall ved cache-hit.
 
 ## Fase 4 — App-skjelett
-- [ ] Opprett `App.tsx` med `BrowserRouter basename={import.meta.env.BASE_URL}` (GitHub Pages-understi), `NavBar`, `Routes` for `/`, `/watchlist`, `/title/:id`, `*`.
-- [ ] Opprett `context/MediaProviderContext.tsx`, koble `CachingMediaProvider(MockMediaProvider)` inn app-bredt via `services/media/index.ts`.
-- [ ] **Definition of done:** Navigasjon mellom de fire rutene fungerer med tomme placeholder-sider.
+- [x] Opprett `App.tsx` med `BrowserRouter basename={import.meta.env.BASE_URL}` (GitHub Pages-understi), `NavBar`, `Routes` for `/`, `/watchlist`, `/title/:id`, `*`.
+- [x] Opprett `context/MediaProviderContext.tsx`, koble `CachingMediaProvider(MockMediaProvider)` inn app-bredt via `services/media/index.ts`.
+- [x] **Definition of done:** Navigasjon mellom de fire rutene fungerer med tomme placeholder-sider.
 
 ## Fase 5 — Søkeside
 - [ ] Implementer `SearchBar`, `useMediaSearch`, `SearchResultsGrid`, `SearchResultCard`.

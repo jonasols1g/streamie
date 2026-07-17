@@ -26,7 +26,10 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 
 - Fase 3 (cache-lag) implementert via PR #2 med full agent-loop: `dev` → `reviewer` (godkjent uten funn) → `verifier` (grønn CI + drev cache-laget direkte mot produksjonsbygget, 22/22 sjekker) → squash-merge. `LocalStorageCacheStore` med feature-detection/in-memory-fallback, type guard-validering, TTL og quota-eviction (utløpte først, så eldste); `CachingMediaProvider` som dekoratør rundt `MediaProvider`; `normalizeQuery` og versjonerte nøkkelprefikser (`watchlist:v1:cache:` / `watchlist:v1:data:`). 39 nye enhetstester (59 totalt).
 
-**Neste:** fase 4 i `dev-tasks.md` (app-skjelett).
+- Fase 4 (app-skjelett) implementert via PR #3 med full agent-loop: `dev` → `reviewer` (godkjent uten funn) → `verifier` (grønn CI + drev navigasjon manuelt mot produksjonsbygget, inkl. dyplenke og ukjent sti) → squash-merge. `App.tsx` med `BrowserRouter basename={import.meta.env.BASE_URL}`, `NavBar` og ruter for `/`, `/watchlist`, `/title/:id`, `*`; `MediaProviderContext` koblet til sammensetningsroten i `services/media/index.ts` (`CachingMediaProvider(MockMediaProvider, LocalStorageCacheStore)`).
+- Sidefunn fra `dev` underveis: `setupTests.ts` manglet `afterEach(cleanup)` for Testing Library (usynlig til nå fordi ingen tidligere test rendret flere ganger i samme fil) — fikset. `e2e/smoke.spec.ts` fra fase 1 forventet gammel placeholder-heading — oppdatert til å matche ny `HomePage`.
+
+**Neste:** fase 5 i `dev-tasks.md` (søkeside).
 
 ## 2026-07-16
 
