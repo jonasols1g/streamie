@@ -34,7 +34,9 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 
 - Fase 6 (detaljside) implementert via PR #5 med full agent-loop: `dev` → `reviewer` (godkjent uten funn) → `verifier` (grønn CI + drev detaljside manuelt mot produksjonsbygget mot fullstendig fixture, manglende plakat/RT-score, manglende streaming, serie-fixture og ukjent id) → squash-merge. `useMediaDetails` (auto-hent ved mount/id-endring, `AbortSignal`, `retry()`), `RatingsBadge`, `GenreTags`, `StreamingProvidersList` (tom-tilstand, kun `https:`-lenker klikkbare) og `TitleDetailPage` som komponerer dem. `WatchlistToggleButton` bevisst utelatt til fase 7. Mindre kosmetisk avvik (sentrert tom-tilstand-tekst i strømme-seksjonen) notert av `verifier`, ikke blokkerende.
 
-**Neste:** fase 7 i `dev-tasks.md` (watchlist-funksjonalitet).
+- Fase 7 (watchlist-funksjonalitet) implementert via PR #6 med full agent-loop: `dev` → `reviewer` (godkjent uten funn) → `verifier` (grønn CI + drev hele flyten manuelt mot produksjonsbygget: legg til fra søkeresultat → «Planlagt» → bytt status til «Sett» → reload → status beholdt → fjern fra detaljside → reload → tomt) → squash-merge. `WatchlistContext` (`useReducer` med `ADD`/`REMOVE`/`SET_STATUS`, lagrer synkront via en `itemsRef`-wrapper i stedet for `useEffect`, pga. `eslint-plugin-react-hooks`s `set-state-in-effect`-regel — vurdert og godkjent av `reviewer` som et akseptabelt avvik fra docs' illustrative pseudokode) og `watchlistStorage` (type guard-validering, in-memory-fallback, skrivefeil-policy: rydd cache før feilmelding, aldri stille tap). `WatchlistToggleButton` integrert på både `SearchResultCard` og `TitleDetailPage`. `detectLocalStorage` i `LocalStorageCacheStore` generalisert og gjenbrukt.
+
+**Neste:** fase 8 i `dev-tasks.md` (talesøk).
 
 ## 2026-07-16
 

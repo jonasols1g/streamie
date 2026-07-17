@@ -14,7 +14,7 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 | 4 — App-skjelett | ✅ Ferdig 2026-07-17 |
 | 5 — Søkeside | ✅ Ferdig 2026-07-17 |
 | 6 — Detaljside | ✅ Ferdig 2026-07-17 |
-| 7 — Watchlist-funksjonalitet | ☐ Ikke startet |
+| 7 — Watchlist-funksjonalitet | ✅ Ferdig 2026-07-17 |
 | 8 — Talesøk | ☐ Ikke startet |
 | 9 — Polish | ☐ Ikke startet |
 | 10 — Ekte API-integrasjon | ☐ Ikke startet |
@@ -63,11 +63,11 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 - [x] **Definition of done:** Detaljside viser alle felt fra en `Media`-fixture korrekt, inkludert null-tilfeller.
 
 ## Fase 7 — Watchlist-funksjonalitet
-- [ ] Implementer `context/WatchlistContext.tsx` (reducer: `ADD`/`REMOVE`/`SET_STATUS`) og `services/storage/watchlistStorage.ts`.
-- [ ] `watchlistStorage`: type guard-validering ved lesing, in-memory-fallback når `localStorage` er utilgjengelig, og skrivefeil-policyen fra [architecture.md](./architecture.md#cache-design) — rydd cache for å frigjøre plass, ellers synlig feilmelding; aldri stille tap av brukerdata.
-- [ ] Implementer `WatchlistToggleButton` (på både søkeresultat-kort og detaljside), `WatchlistPage` med `WatchlistTabs` (Planlagt/Sett), `WatchlistItemCard`.
-- [ ] **E2E** (`e2e/watchlist.spec.ts`): legg til fra søkeresultat → tittelen vises under «Planlagt» → bytt status til «Sett» → `page.reload()` → status er beholdt. Persistens over reload er nettopp det enhetstester ikke fanger, og hovedgrunnen til at E2E er verdt det her.
-- [ ] **Definition of done:** Legge til, bytte status og fjerne fra watchlist fungerer og overlever en sideoppdatering (persistert i `localStorage`).
+- [x] Implementer `context/WatchlistContext.tsx` (reducer: `ADD`/`REMOVE`/`SET_STATUS`) og `services/storage/watchlistStorage.ts`.
+- [x] `watchlistStorage`: type guard-validering ved lesing, in-memory-fallback når `localStorage` er utilgjengelig, og skrivefeil-policyen fra [architecture.md](./architecture.md#cache-design) — rydd cache for å frigjøre plass, ellers synlig feilmelding; aldri stille tap av brukerdata.
+- [x] Implementer `WatchlistToggleButton` (på både søkeresultat-kort og detaljside), `WatchlistPage` med `WatchlistTabs` (Planlagt/Sett), `WatchlistItemCard`.
+- [x] **E2E** (`e2e/watchlist.spec.ts`): legg til fra søkeresultat → tittelen vises under «Planlagt» → bytt status til «Sett» → `page.reload()` → status er beholdt. Persistens over reload er nettopp det enhetstester ikke fanger, og hovedgrunnen til at E2E er verdt det her.
+- [x] **Definition of done:** Legge til, bytte status og fjerne fra watchlist fungerer og overlever en sideoppdatering (persistert i `localStorage`).
 
 ## Fase 8 — Talesøk
 - [ ] Implementer `hooks/useSpeechRecognition.ts` med feature-detection (`window.SpeechRecognition ?? window.webkitSpeechRecognition`) og `lang: 'en-US'` (se [design.md](./design.md#søkeflyt-tekst-og-tale)).
