@@ -26,8 +26,8 @@ export function VoiceSearchButton({ onResult }: VoiceSearchButtonProps) {
       <button
         type="button"
         disabled
-        aria-label="Talesøk støttes ikke i denne nettleseren"
-        title="Talesøk støttes ikke i denne nettleseren"
+        aria-label="Talegjenkjenning støttes ikke i denne nettleseren"
+        title="Talegjenkjenning støttes ikke i denne nettleseren"
         className={`${baseButtonClassName} cursor-not-allowed border border-slate-200 text-slate-400`}
       >
         <MicIcon />
@@ -46,7 +46,9 @@ export function VoiceSearchButton({ onResult }: VoiceSearchButtonProps) {
             start();
           }
         }}
-        aria-label={isListening ? "Stopp talesøk" : "Start talesøk"}
+        aria-label={
+          isListening ? "Stopp talegjenkjenning" : "Start talegjenkjenning"
+        }
         aria-pressed={isListening}
         className={`${baseButtonClassName} ${
           isListening

@@ -19,7 +19,7 @@ describe("VoiceSearchButton — nettleser uten støtte", () => {
     render(<VoiceSearchButton onResult={onResult} />);
 
     const button = screen.getByRole("button", {
-      name: "Talesøk støttes ikke i denne nettleseren",
+      name: "Talegjenkjenning støttes ikke i denne nettleseren",
     });
     expect(button).toBeDisabled();
   });
@@ -32,11 +32,13 @@ describe("VoiceSearchButton — nettleser med støtte", () => {
     const user = userEvent.setup();
     render(<VoiceSearchButton onResult={onResult} />);
 
-    const button = screen.getByRole("button", { name: "Start talesøk" });
+    const button = screen.getByRole("button", {
+      name: "Start talegjenkjenning",
+    });
     await user.click(button);
 
     expect(
-      screen.getByRole("button", { name: "Stopp talesøk" }),
+      screen.getByRole("button", { name: "Stopp talegjenkjenning" }),
     ).toHaveAttribute("aria-pressed", "true");
   });
 
@@ -46,7 +48,9 @@ describe("VoiceSearchButton — nettleser med støtte", () => {
     const user = userEvent.setup();
     render(<VoiceSearchButton onResult={onResult} />);
 
-    await user.click(screen.getByRole("button", { name: "Start talesøk" }));
+    await user.click(
+      screen.getByRole("button", { name: "Start talegjenkjenning" }),
+    );
     const instance = instances[0];
     if (instance === undefined) throw new Error("forventet en instans");
 
@@ -63,7 +67,9 @@ describe("VoiceSearchButton — nettleser med støtte", () => {
     const user = userEvent.setup();
     render(<VoiceSearchButton onResult={onResult} />);
 
-    await user.click(screen.getByRole("button", { name: "Start talesøk" }));
+    await user.click(
+      screen.getByRole("button", { name: "Start talegjenkjenning" }),
+    );
     const instance = instances[0];
     if (instance === undefined) throw new Error("forventet en instans");
 
@@ -79,7 +85,7 @@ describe("VoiceSearchButton — nettleser med støtte", () => {
     );
     // Knappen er fortsatt der og brukbar — feilen blokkerer ikke søkefeltet.
     expect(
-      screen.getByRole("button", { name: "Start talesøk" }),
+      screen.getByRole("button", { name: "Start talegjenkjenning" }),
     ).toBeInTheDocument();
   });
 });
