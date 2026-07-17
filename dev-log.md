@@ -44,7 +44,9 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 
 - Bugfiks (PR #9, ikke en fase): bruker meldte at `npm run dev` viste appen helt uten styling. Rotårsak: fase 9s CSP (`style-src 'self'`) blokkerte Vites dev-server fra å injisere CSS via inline `<style>`-tagger (brukt til HMR) — konsollen viste en eksplisitt CSP-blokkeringsfeil. Produksjonsbygget rammes ikke, siden Vite der bunter CSS til en egen `.css`-fil lastet via `<link>`; derfor fanget ikke fase 9s `verifier` (som testet mot `vite preview`) dette opp. Fiks: CSP-meta-taggen fjernet fra den statiske `index.html`, injiseres nå i stedet av et nytt Vite-plugin (`cspMetaTagPlugin`, `apply: "build"`) som kun kjører ved `vite build` — selve policyen er uendret, kun injeksjonstidspunktet er flyttet. Kjørt gjennom samme `dev` → `reviewer` → `verifier`-loop som fasene, ingen funn i noen av rundene, squash-merget.
 
-**Neste:** Pages-beslutningen (offentliggjøre repoet vs. GitHub Pro) må tas før fase 9 kan hakes helt av. Deretter fase 10 i `dev-tasks.md` (ekte API-integrasjon, egen senere milepæl).
+- Endring (PR #10, ikke en fase): watchlist-sidens interne rute endret fra `/watchlist` til `/mylist`, etter ønske fra bruker om å unngå den forvirrende doble stien `.../watchlist/watchlist` (appens `base`-understi på GitHub Pages, `/watchlist/`, er uendret — kun sideruten er flyttet). Oppdatert i `App.tsx`, `NavBar`, begge E2E-spec-ene og rutetabellene i `design.md`/`architecture.md`. Kjørt gjennom samme `dev` → `reviewer` → `verifier`-loop, ingen funn, squash-merget. Flyttet også oppgaven om å aktivere GitHub Pages-publisering fra fase 9 til fase 10s oppgaveliste (2026-07-17), siden den uansett venter på Pages-beslutningen og fase 10 er et mer naturlig sted for den.
+
+**Neste:** Pages-beslutningen (offentliggjøre repoet vs. GitHub Pro) må tas før fase 9 kan hakes helt av og fase 10s Pages-oppgave kan gjennomføres.
 
 ## 2026-07-16
 
