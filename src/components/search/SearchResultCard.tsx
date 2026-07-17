@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
-import { WatchlistToggleButton } from "../watchlist/WatchlistToggleButton";
+import { useWatchlist } from "../../context/WatchlistContext";
+import { WatchlistStarToggle } from "../watchlist/WatchlistStarToggle";
 import { PosterImage } from "../media/PosterImage";
 import type { MediaSummary } from "../../types/media";
+import { WATCHLIST_STATUS_LABEL } from "../../types/watchlist";
+import { accentHueClasses } from "../../utils/accentHue";
 
 export interface SearchResultCardProps {
   media: MediaSummary;
@@ -13,38 +16,53 @@ const MEDIA_TYPE_LABEL: Record<MediaSummary["mediaType"], string> = {
 };
 
 /**
- * Ett treff i søkeresultat-grid (se docs/design.md#visning-av-søkeresultater):
- * plakat, tittel, utgivelsesår, type og watchlist-toggle. Klikk på
+ * Ett treff i søkeresultat-grid (se docs/design.md#visning-av-søkeresultater
+ * og docs/design-spec/screenshots/02-sokeresultater.png): plakat med
+ * hue-tonet ring, tittel, meta-linje i tittelens hue, og en stjerne-badge
+ * over plakaten som viser/bytter watchlist-tilstand. Klikk på
  * plakat/tittel navigerer til `/title/:id`. Strømmetilgjengelighet vises
  * bevisst ikke her — den hentes først på detaljsiden.
  *
- * `WatchlistToggleButton` ligger bevisst utenfor `<Link>`-en: nøstede
- * interaktive elementer (knapp inne i lenke) er ugyldig HTML og ville gjort
- * at klikk på knappen også trigget navigasjon.
+ * `WatchlistStarToggle` ligger bevisst utenfor `<Link>`-en (som en
+ * absolutt posisjonert søsken-node over plakaten): nøstede interaktive
+ * elementer (knapp inne i lenke) er ugyldig HTML og ville gjort at klikk på
+ * knappen også trigget navigasjon.
  */
 export function SearchResultCard({ media }: SearchResultCardProps) {
+  const { getStatus } = useWatchlist();
+  const status = getStatus(media.id);
+  const hue = accentHueClasses(media.id);
+
   return (
-    <article className="flex flex-col overflow-hidden rounded-md border border-slate-200 transition hover:shadow-md">
+    <article className="relative flex flex-col gap-2">
       <Link
         to={`/title/${media.id}`}
-        className="flex flex-col focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-800"
+        className="flex flex-col gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
         <PosterImage
           posterUrl={media.posterUrl}
           title={media.title}
-          className="aspect-2/3 w-full object-cover"
+          className={`aspect-2/3 w-full rounded-[14px] object-cover ring-1 ${hue.ring}`}
         />
-        <div className="flex flex-1 flex-col gap-1 p-3 pb-2">
-          <span className="font-semibold">{media.title}</span>
-          <span className="text-sm text-slate-600">
+        <div className="flex flex-col gap-0.5">
+          <span className="font-heading text-[13.5px] font-semibold">
+            {media.title}
+          </span>
+          <span className={`text-[11.5px] font-semibold ${hue.text}`}>
             {media.releaseYear ?? "Ukjent år"} ·{" "}
             {MEDIA_TYPE_LABEL[media.mediaType]}
           </span>
+          {status !== null && (
+            <p className="text-text-muted text-[11px]">
+              I watchlisten – {WATCHLIST_STATUS_LABEL[status]}
+            </p>
+          )}
         </div>
       </Link>
-      <div className="p-3 pt-0">
-        <WatchlistToggleButton media={media} />
-      </div>
+      <WatchlistStarToggle
+        media={media}
+        className="absolute top-2 right-2 h-8 w-8"
+      />
     </article>
   );
 }

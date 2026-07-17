@@ -5,8 +5,10 @@ export interface VoiceSearchButtonProps {
   onResult: (transcript: string) => void;
 }
 
+// Sirkulær 52px mikrofonknapp iht. skjerm 1 i design-spec-en (se
+// docs/design-spec/README.md): samme outline-farge som søkeikonet.
 const baseButtonClassName =
-  "flex h-10 w-10 shrink-0 items-center justify-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-800";
+  "flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
 
 /**
  * Mikrofonknapp for talesøk (se docs/design.md#søkeflyt-tekst-og-tale).
@@ -28,7 +30,7 @@ export function VoiceSearchButton({ onResult }: VoiceSearchButtonProps) {
         disabled
         aria-label="Talegjenkjenning støttes ikke i denne nettleseren"
         title="Talegjenkjenning støttes ikke i denne nettleseren"
-        className={`${baseButtonClassName} cursor-not-allowed border border-slate-200 text-slate-400`}
+        className={`${baseButtonClassName} border-surface-border/50 text-text-muted/50 cursor-not-allowed`}
       >
         <MicIcon />
       </button>
@@ -52,14 +54,14 @@ export function VoiceSearchButton({ onResult }: VoiceSearchButtonProps) {
         aria-pressed={isListening}
         className={`${baseButtonClassName} ${
           isListening
-            ? "animate-pulse bg-red-600 text-white"
-            : "bg-slate-800 text-white hover:bg-slate-900"
+            ? "border-brand-magenta bg-brand-magenta/20 text-brand-magenta animate-pulse"
+            : "border-surface-border bg-surface text-text-muted hover:text-text-primary"
         }`}
       >
         <MicIcon />
       </button>
       {error !== null && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-red-300">
           {error}
         </p>
       )}

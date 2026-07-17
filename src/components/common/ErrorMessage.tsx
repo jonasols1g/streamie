@@ -34,14 +34,14 @@ export function ErrorMessage({ code, onRetry }: ErrorMessageProps) {
   return (
     <div
       role="alert"
-      className="flex flex-col items-center gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-6 text-center text-red-800"
+      className="border-accent/40 bg-accent/10 flex flex-col items-center gap-3 rounded-2xl border px-4 py-6 text-center text-red-200"
     >
       <p>{ERROR_MESSAGES[code]}</p>
       {showRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="rounded bg-red-700 px-4 py-2 font-medium text-white hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900"
+          className="bg-accent rounded-xl px-4 py-2 font-medium text-white transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           Prøv igjen
         </button>

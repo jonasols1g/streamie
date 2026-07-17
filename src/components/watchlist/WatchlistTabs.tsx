@@ -30,7 +30,7 @@ export function WatchlistTabs({
     <div
       role="tablist"
       aria-label="Watchlist-status"
-      className="flex gap-2 border-b border-slate-200"
+      className="border-surface-border/40 flex gap-2 border-b"
     >
       {TAB_ORDER.map((status) => (
         <button
@@ -43,10 +43,10 @@ export function WatchlistTabs({
           onClick={() => {
             onChange(status);
           }}
-          className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-800 ${
+          className={`-mb-px border-b-2 px-4 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
             active === status
-              ? "border-slate-800 text-slate-900"
-              : "border-transparent text-slate-500 hover:text-slate-700"
+              ? "border-brand-magenta text-brand-magenta"
+              : "text-text-muted hover:text-text-primary border-transparent"
           }`}
         >
           {TAB_LABEL[status]} ({counts[status]})

@@ -12,11 +12,11 @@ export function LoadingSpinner({ label = "Laster …" }: LoadingSpinnerProps) {
     <div
       role="status"
       aria-live="polite"
-      className="flex items-center justify-center gap-3 py-8 text-slate-600"
+      className="text-text-muted flex items-center justify-center gap-3 py-8"
     >
       <span
         aria-hidden="true"
-        className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600"
+        className="border-surface-border border-t-brand-magenta h-6 w-6 animate-spin rounded-full border-2"
       />
       <span>{label}</span>
     </div>

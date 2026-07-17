@@ -11,6 +11,19 @@
       Vites dev-server, som bruker inline <style>-tagger for HMR.
     -->
     <title>Watchlist</title>
+    <!--
+      Google Fonts (CineFind-temaet, fase 11, se
+      docs/design.md#visuelt-tema-cinefind-fase-11): Space Grotesk for
+      overskrifter/wordmark, Manrope for brødtekst/UI. CSP-en i
+      vite.config.ts er utvidet med style-src/font-src for disse to
+      domenene tilsvarende.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>

@@ -17,7 +17,7 @@ export function GenreTags({ genres }: GenreTagsProps) {
       {genres.map((genre) => (
         <li
           key={genre}
-          className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700"
+          className="border-surface-border bg-surface text-text-primary rounded-full border px-3 py-1 text-sm"
         >
           {genre}
         </li>
