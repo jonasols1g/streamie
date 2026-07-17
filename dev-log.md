@@ -17,6 +17,8 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 
 - CI grønn på push (begge jobber, inkl. E2E). Fase 1 er dermed komplett iht. Definition of done.
 
+- La om agent-arbeidsflyten til PR-basert (`.claude/agents/`): `dev` jobber nå på feature-branch (`feat/fase-N-…`) og åpner PR mot `main`; `reviewer` konkluderer alltid med en kommentar på PR-en via `gh pr comment` («endringer kreves» med funn, eller «godkjent» som verifikasjon) — `gh pr review --approve` går ikke siden PR-ene er fra samme GitHub-bruker. Funn fikses av `dev` på samme branch og re-reviewes, i loop til godkjent. Deretter sjekker `verifier` ut branchen (`gh pr checkout`) og kjører tester/bygg/E2E; ved grønt squash-merger hovedsamtalen PR-en (`gh pr merge --squash --delete-branch`) — én fase blir én commit på `main`, som i fase 1.
+
 **Neste:** fase 2 i `dev-tasks.md` (domenemodell, `MediaProvider`-interface og `MockMediaProvider`).
 
 ## 2026-07-16
