@@ -19,6 +19,8 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 
 - La om agent-arbeidsflyten til PR-basert (`.claude/agents/`): `dev` jobber nå på feature-branch (`feat/fase-N-…`) og åpner PR mot `main`; `reviewer` konkluderer alltid med en kommentar på PR-en via `gh pr comment` («endringer kreves» med funn, eller «godkjent» som verifikasjon) — `gh pr review --approve` går ikke siden PR-ene er fra samme GitHub-bruker. Funn fikses av `dev` på samme branch og re-reviewes, i loop til godkjent. Deretter sjekker `verifier` ut branchen (`gh pr checkout`) og kjører tester/bygg/E2E; ved grønt squash-merger hovedsamtalen PR-en (`gh pr merge --squash --delete-branch`) — én fase blir én commit på `main`, som i fase 1.
 
+- Strammet inn agent-arbeidsflyten etter en gjennomgang: ny `CLAUDE.md` i rota dokumenterer orkestreringen (spawn-rekkefølge, review-runder via SendMessage til samme agent, eskalering til hovedsamtalen ved uenighet etter to runder, merge og etterarbeid). `reviewer` sjekker nå `gh pr checks` først (rød CI = blokkerende funn) og skal ta eksplisitt stilling til bestridte funn. `verifier` bruker grønn CI som bevis for lint/tester/E2E/bygg og bruker lokal tid på å drive den berørte flyten manuelt mot preview-bygget (nå obligatorisk, ikke «ved behov»). `dev` fikk verktøysavgrensning i frontmatter og krav om ordrett testresultat i rapporten. Både `dev` og `verifier` avslutter alltid på `main`, siden arbeidskatalogen deles.
+
 **Neste:** fase 2 i `dev-tasks.md` (domenemodell, `MediaProvider`-interface og `MockMediaProvider`).
 
 ## 2026-07-16
