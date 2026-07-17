@@ -16,7 +16,7 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 | 6 — Detaljside | ✅ Ferdig 2026-07-17 |
 | 7 — Watchlist-funksjonalitet | ✅ Ferdig 2026-07-17 |
 | 8 — Talesøk | ✅ Ferdig 2026-07-17 |
-| 9 — Polish | ☐ Ikke startet |
+| 9 — Polish | 🟡 Delvis 2026-07-17 (Pages-publisering avventer) |
 | 10 — Ekte API-integrasjon | ☐ Ikke startet |
 
 ## Fase 1 — Prosjektoppsett
@@ -77,14 +77,14 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 **Merk — talesøk dekkes ikke av E2E:** Web Speech API krever ekte mikrofoninput og en gjenkjenningstjeneste hos Google; Playwright kan verken mate inn lyd eller stubbe `SpeechRecognition` meningsfullt utenfra. Talesøk verifiseres derfor med enhetstester (mocket `SpeechRecognition`) pluss manuell testing i Chrome. Det er en reell begrensning i rammeverket, ikke en nedprioritering. Siden talesøk og tekstsøk deler kodepath (`handleSearch(query)`), dekker E2E-testene for tekstsøk alt bortsett fra selve tale-til-tekst-steget.
 
 ## Fase 9 — Polish
-- [ ] Tilgjengelighet: `aria-label`er (spesielt mikrofonknapp), synlig fokus-styling, tastaturnavigasjon.
-- [ ] Responsivt design på tvers av alle sider.
-- [ ] Konsekvente tomme/lastings/feil-tilstander overalt (gjenbruk `components/common/`).
-- [ ] Legg til Content-Security-Policy som `<meta http-equiv>`-tag i `index.html` (GitHub Pages støtter ikke egendefinerte headere, se [architecture.md](./architecture.md#robusthet-og-sikkerhet)).
-- [ ] Aktiver GitHub Pages-publisering fra CI-workflowen (bygg + `actions/deploy-pages`; `base`/`basename`/404-fallback er på plass siden fase 1).
-- [ ] **E2E** (`e2e/deep-links.spec.ts`): last `/watchlist/title/<id>` direkte og refresh på hver rute — verifiserer 404.html-fallbacken og `basename`-oppsettet. Dette er den mest verdifulle E2E-testen i prosjektet: SPA-fallback på GitHub Pages er nettopp den typen feil som kun oppstår i produksjonsbygget og aldri i `npm run dev`.
-- [ ] **E2E:** kjør hele suiten mot produksjonsbygget (`vite preview` med `base: '/watchlist/'`), ikke bare mot dev-serveren.
-- [ ] **Definition of done:** Manuell gjennomgang av alle sider på mobil- og desktop-bredde, ingen ubehandlede tilstander. E2E-suiten er grønn mot produksjonsbygget i CI. I produksjon på Pages: dyplenker (`…/watchlist/title/<id>` lastet direkte) og refresh fungerer på alle ruter.
+- [x] Tilgjengelighet: `aria-label`er (spesielt mikrofonknapp), synlig fokus-styling, tastaturnavigasjon.
+- [x] Responsivt design på tvers av alle sider.
+- [x] Konsekvente tomme/lastings/feil-tilstander overalt (gjenbruk `components/common/`).
+- [x] Legg til Content-Security-Policy som `<meta http-equiv>`-tag i `index.html` (GitHub Pages støtter ikke egendefinerte headere, se [architecture.md](./architecture.md#robusthet-og-sikkerhet)).
+- [ ] Aktiver GitHub Pages-publisering fra CI-workflowen (bygg + `actions/deploy-pages`; `base`/`basename`/404-fallback er på plass siden fase 1). **Utsatt:** repoet er privat og gratisplanen støtter ikke Pages for private repoer. Bruker har bevisst utsatt beslutningen (offentliggjøre repoet vs. GitHub Pro) — tas opp igjen senere.
+- [x] **E2E** (`e2e/deep-links.spec.ts`): last `/watchlist/title/<id>` direkte og refresh på hver rute — verifiserer 404.html-fallbacken og `basename`-oppsettet. Dette er den mest verdifulle E2E-testen i prosjektet: SPA-fallback på GitHub Pages er nettopp den typen feil som kun oppstår i produksjonsbygget og aldri i `npm run dev`.
+- [x] **E2E:** kjør hele suiten mot produksjonsbygget (`vite preview` med `base: '/watchlist/'`), ikke bare mot dev-serveren. (På plass siden fase 1s `playwright.config.ts`.)
+- [ ] **Definition of done:** Manuell gjennomgang av alle sider på mobil- og desktop-bredde, ingen ubehandlede tilstander ✅. E2E-suiten er grønn mot produksjonsbygget i CI ✅. I produksjon på Pages: dyplenker (`…/watchlist/title/<id>` lastet direkte) og refresh fungerer på alle ruter — **ikke verifiserbart før Pages-publisering aktiveres**, se punktet over. DoD hakes av i sin helhet når Pages-beslutningen er tatt og dette siste punktet er bekreftet i produksjon.
 
 **Merk:** E2E erstatter ikke den manuelle gjennomgangen — responsivt design og visuell polish på tvers av skjermbredder verifiseres fortsatt manuelt. Det er ingen visuell regresjonstesting (screenshot-diffing) i v1.
 
