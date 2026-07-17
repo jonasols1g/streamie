@@ -10,7 +10,10 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 - Committet og pushet dokumentasjonen: `README.md`, `docs/` og `dev-log.md`. Punkt 2 i `todo.md` er dermed ferdig.
 - Installerte `gh` (2.96.0) og logget inn som `jonasols1g`. Forsøkte å slå på GitHub Pages, men repoet er privat og gratisplanen støtter ikke Pages for private repoer. Beslutning: punkt 3 utsatt til fase 9 — da velges enten offentlig repo eller GitHub Pro. Fase 1–8 er ikke blokkert.
 
-**Neste:** fase 1 i `dev-tasks.md`.
+- Ryddet `todo.md`: løste punkter (Node, dokumentasjons-commit) fjernet — historikken bor her i loggen.
+- Satte opp subagent-team i `.claude/agents/` etter diskusjon med bruker (utvidet fra to til fire roller): `feature-planner` (vurderer nye features mot docs, read-only), `dev` (implementerer faser, kode + enhetstester), `reviewer` (diff-review mot docs og DoD, read-only) og `verifier` (kjører tester/bygg/E2E, endrer aldri kode). Bevisst droppet egne agenter for arkitektur, dokumentasjon og UX — dekkes av `feature-planner` og hovedsamtalen.
+
+**Neste:** fase 1 i `dev-tasks.md`, kjørt med det nye agent-teamet.
 
 ## 2026-07-16
 
