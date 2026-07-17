@@ -81,10 +81,10 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 - [x] Responsivt design på tvers av alle sider.
 - [x] Konsekvente tomme/lastings/feil-tilstander overalt (gjenbruk `components/common/`).
 - [x] Legg til Content-Security-Policy som `<meta http-equiv>`-tag i `index.html` (GitHub Pages støtter ikke egendefinerte headere, se [architecture.md](./architecture.md#robusthet-og-sikkerhet)).
-- [ ] Aktiver GitHub Pages-publisering fra CI-workflowen (bygg + `actions/deploy-pages`; `base`/`basename`/404-fallback er på plass siden fase 1). **Utsatt:** repoet er privat og gratisplanen støtter ikke Pages for private repoer. Bruker har bevisst utsatt beslutningen (offentliggjøre repoet vs. GitHub Pro) — tas opp igjen senere.
+- [ ] ~~Aktiver GitHub Pages-publisering fra CI-workflowen~~ — **utsatt til fase 10** (se oppgavelisten der): repoet er privat og gratisplanen støtter ikke Pages for private repoer. Bruker har bevisst utsatt beslutningen (offentliggjøre repoet vs. GitHub Pro).
 - [x] **E2E** (`e2e/deep-links.spec.ts`): last `/watchlist/title/<id>` direkte og refresh på hver rute — verifiserer 404.html-fallbacken og `basename`-oppsettet. Dette er den mest verdifulle E2E-testen i prosjektet: SPA-fallback på GitHub Pages er nettopp den typen feil som kun oppstår i produksjonsbygget og aldri i `npm run dev`.
 - [x] **E2E:** kjør hele suiten mot produksjonsbygget (`vite preview` med `base: '/watchlist/'`), ikke bare mot dev-serveren. (På plass siden fase 1s `playwright.config.ts`.)
-- [ ] **Definition of done:** Manuell gjennomgang av alle sider på mobil- og desktop-bredde, ingen ubehandlede tilstander ✅. E2E-suiten er grønn mot produksjonsbygget i CI ✅. I produksjon på Pages: dyplenker (`…/watchlist/title/<id>` lastet direkte) og refresh fungerer på alle ruter — **ikke verifiserbart før Pages-publisering aktiveres**, se punktet over. DoD hakes av i sin helhet når Pages-beslutningen er tatt og dette siste punktet er bekreftet i produksjon.
+- [ ] **Definition of done:** Manuell gjennomgang av alle sider på mobil- og desktop-bredde, ingen ubehandlede tilstander ✅. E2E-suiten er grønn mot produksjonsbygget i CI ✅. I produksjon på Pages: dyplenker (`…/watchlist/title/<id>` lastet direkte) og refresh fungerer på alle ruter — **ikke verifiserbart før Pages-publisering aktiveres i fase 10**. DoD hakes av i sin helhet når Pages-beslutningen er tatt og dette siste punktet er bekreftet i produksjon.
 
 **Merk:** E2E erstatter ikke den manuelle gjennomgangen — responsivt design og visuell polish på tvers av skjermbredder verifiseres fortsatt manuelt. Det er ingen visuell regresjonstesting (screenshot-diffing) i v1.
 
@@ -109,6 +109,7 @@ Forutsetninger som var åpne, og nå er avklart (fakta, ingen oppgaver):
 - [ ] Legg til `Footer` med attribusjon (se [design.md](./design.md#attribusjon)).
 - [ ] Bytt `services/media/index.ts` fra `MockMediaProvider` til `CompositeMediaProvider`.
 - [ ] Bump data-versjonen til `watchlist:v2:data:` — eksisterende watchlist fra mock-fasen slettes bevisst, ingen migrasjonslogikk (se [architecture.md](./architecture.md#kjente-forutsetninger-og-risikoer)).
+- [ ] Aktiver GitHub Pages-publisering fra CI-workflowen (bygg + `actions/deploy-pages`; `base`/`basename`/404-fallback på plass siden fase 1, CSP injiseres kun ved build siden PR #9). Utsatt fra fase 9 fordi repoet er privat og GitHub sin gratisplan ikke støtter Pages for private repoer — forutsetter at repoet gjøres offentlig eller kontoen oppgraderes til GitHub Pro; avklar dette med bruker før oppgaven gjennomføres.
 
 ### Testing
 
