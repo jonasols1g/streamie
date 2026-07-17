@@ -34,7 +34,7 @@ export function PosterImage({ posterUrl, title, className }: PosterImageProps) {
       <div
         role="img"
         aria-label={`Ingen plakat tilgjengelig for ${title}`}
-        className={`flex items-center justify-center bg-slate-200 text-center text-sm text-slate-500 ${className ?? ""}`}
+        className={`bg-surface text-text-muted flex items-center justify-center text-center text-sm ${className ?? ""}`}
       >
         Ingen plakat
       </div>

@@ -17,7 +17,7 @@ export function WatchlistSaveErrorBanner() {
   return (
     <div
       role="alert"
-      className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-800"
+      className="border-accent/40 bg-accent/10 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-red-200"
     >
       <p>
         Endringen i watchlisten ble ikke lagret — enhetens lagringsplass er
@@ -26,7 +26,7 @@ export function WatchlistSaveErrorBanner() {
       <button
         type="button"
         onClick={dismissSaveError}
-        className="shrink-0 rounded bg-red-700 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900"
+        className="bg-accent shrink-0 rounded-xl px-3 py-1.5 text-sm font-medium text-white transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
         Lukk
       </button>

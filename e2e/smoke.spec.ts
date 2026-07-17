@@ -4,8 +4,9 @@ import { expect, test } from "@playwright/test";
 // /watchlist/-understien og at appen faktisk rendrer.
 test("appen laster under /watchlist/-understien", async ({ page }) => {
   await page.goto("./");
-  await expect(
-    page.getByRole("link", { name: "Watchlist – gå til forsiden" }),
-  ).toBeVisible();
+  // NavBar (fase 11, CineFind-temaet) er en bunn-fanebar uten eget
+  // logo-lenkeelement — "Søk"-fanen (lenke til "/") er den nærmeste
+  // erstatningen for den gamle wordmark-lenken denne testen sjekket.
+  await expect(page.getByRole("link", { name: "Søk" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Søk" })).toBeVisible();
 });

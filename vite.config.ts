@@ -12,6 +12,10 @@ import { defaultExclude, defineConfig, type Plugin } from "vitest/config";
 // lokal, plakat-URL-ene i mock-dataene er ikke ekte); CSP-en er derfor
 // låst til 'self'. Fase 10 utvider connect-src/img-src med OMDb-/
 // MOTN-domenene når CompositeMediaProvider tas i bruk.
+//
+// Fase 11 (CineFind-temaet) laster Space Grotesk/Manrope fra Google Fonts:
+// stilarket ligger på fonts.googleapis.com (style-src), selve fontfilene
+// lastes derfra videre fra fonts.gstatic.com (font-src).
 function cspMetaTagPlugin(): Plugin {
   return {
     name: "csp-meta-tag",
@@ -23,7 +27,7 @@ function cspMetaTagPlugin(): Plugin {
           attrs: {
             "http-equiv": "Content-Security-Policy",
             content:
-              "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'",
+              "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'",
           },
           injectTo: "head-prepend",
         },

@@ -14,8 +14,12 @@ export function App() {
     <MediaProviderProvider provider={mediaProvider}>
       <WatchlistProvider>
         <BrowserRouter basename={import.meta.env.BASE_URL}>
-          <NavBar />
-          <main className="mx-auto max-w-5xl p-4">
+          {/*
+            NavBar er en fast bunn-fanebar (78px, se
+            docs/design.md#visuelt-tema-cinefind-fase-11) — `pb-[94px]`
+            holder sideinnholdet unna den på alle sider.
+          */}
+          <main className="mx-auto min-h-screen max-w-5xl p-4 pb-[94px]">
             <WatchlistSaveErrorBanner />
             <Routes>
               <Route path="/" element={<HomePage />} />
@@ -24,6 +28,7 @@ export function App() {
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </main>
+          <NavBar />
         </BrowserRouter>
       </WatchlistProvider>
     </MediaProviderProvider>

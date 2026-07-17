@@ -14,16 +14,23 @@ const EMPTY_MESSAGE: Record<WatchlistStatus, string> = {
 const searchLink = (
   <Link
     to="/"
-    className="rounded bg-slate-800 px-4 py-2 font-medium text-white hover:bg-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-800"
+    className="bg-brand-gradient rounded-2xl px-4 py-2 font-medium text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
   >
     Søk etter titler
   </Link>
 );
 
 /**
- * Watchlist-siden (se docs/design.md#watchlist-ux): to faner ("Planlagt" /
+ * Watchlist-siden (se docs/design.md#watchlist-ux og
+ * docs/design-spec/screenshots/04-watchlist.png): to faner ("Planlagt" /
  * "Sett") som filtrerer `WatchlistItem`-listen på status, med egen
  * tom-tilstand per fane.
+ *
+ * Skjermbildet viser sidetittelen som "Min liste" — sidens `<h1>` beholder
+ * derimot teksten "Watchlist" uendret, fordi den treffes eksplisitt av
+ * `App.test.tsx` og det beskyttede e2e/deep-links.spec.ts
+ * (`getByRole("heading", { name: "Watchlist" })`), som ikke skal måtte
+ * endres for denne rene restylingen.
  */
 export function WatchlistPage() {
   const { items } = useWatchlist();
@@ -35,7 +42,18 @@ export function WatchlistPage() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold">Watchlist</h1>
+      {/*
+        h1 må beholde nøyaktig teksten "Watchlist" (ingen antall inni) for at
+        accessible name skal forbli "Watchlist" — App.test.tsx og
+        e2e/deep-links.spec.ts treffer eksakt på dette. Antallet vises som en
+        søskennode ved siden av, ikke inni overskriften.
+      */}
+      <div className="flex items-baseline gap-3">
+        <h1 className="font-heading text-2xl font-bold">Watchlist</h1>
+        <span className="text-text-muted text-base font-normal">
+          {items.length}
+        </span>
+      </div>
 
       <div className="mt-4">
         <WatchlistTabs
@@ -56,7 +74,7 @@ export function WatchlistPage() {
         {visibleItems.length === 0 ? (
           <EmptyState message={EMPTY_MESSAGE[activeTab]} action={searchLink} />
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+          <div className="flex flex-col gap-3">
             {visibleItems.map((item) => (
               <WatchlistItemCard key={item.mediaId} item={item} />
             ))}

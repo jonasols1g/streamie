@@ -11,7 +11,7 @@ export interface EmptyStateProps {
  */
 export function EmptyState({ message, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center gap-3 py-8 text-center text-slate-600">
+    <div className="text-text-muted flex flex-col items-center gap-3 py-8 text-center">
       <p>{message}</p>
       {action}
     </div>

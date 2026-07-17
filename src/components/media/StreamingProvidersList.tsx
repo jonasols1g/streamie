@@ -1,4 +1,5 @@
 import type { StreamingAvailability, StreamingOffer } from "../../types/media";
+import { accentHueClasses } from "../../utils/accentHue";
 import { EmptyState } from "../common/EmptyState";
 
 export interface StreamingProvidersListProps {
@@ -13,11 +14,16 @@ const OFFER_TYPE_LABEL: Record<StreamingOffer["type"], string> = {
 };
 
 /**
- * Strømmetjenester som tilbyr tittelen (se docs/design.md#detaljvisning).
- * `streaming` er `null` når tittelen ikke er tilgjengelig i regionen — det
- * er en normaltilstand, ikke en feil (se
- * docs/architecture.md#compositemediaprovider), og behandles likt med en tom
- * `offers`-liste: begge viser samme tom-tilstand.
+ * Strømmetjenester som tilbyr tittelen (se docs/design.md#detaljvisning og
+ * docs/design-spec/screenshots/03-detaljside.png: tekst-only badger med
+ * distinkt hue-tonet kant per tjeneste). `streaming` er `null` når tittelen
+ * ikke er tilgjengelig i regionen — det er en normaltilstand, ikke en feil
+ * (se docs/architecture.md#compositemediaprovider), og behandles likt med en
+ * tom `offers`-liste: begge viser samme tom-tilstand.
+ *
+ * Hue-en per tjeneste kommer fra samme `accentHueFor` som per-tittel-huene
+ * (her hasjet på `providerId` i stedet for en tittel-id) — samme
+ * deterministiske, rene UI-lags-mekanisme, ingen ny modell-kobling.
  *
  * Lenker åpnes i ny fane med `rel="noopener noreferrer"`. Kun `https:`-URL-er
  * rendres som lenke — resten vises som ren tekst (se
@@ -37,6 +43,7 @@ export function StreamingProvidersList({
   return (
     <ul className="flex flex-wrap gap-3">
       {offers.map((offer) => {
+        const hue = accentHueClasses(offer.providerId);
         const isValidLink = offer.url?.startsWith("https:") ?? false;
         const content = (
           <>
@@ -48,12 +55,15 @@ export function StreamingProvidersList({
                 className="h-8 w-8 rounded object-contain"
               />
             )}
-            <span className="font-medium">{offer.providerName}</span>
-            <span className="text-sm text-slate-500">
+            <span className="text-text-primary font-semibold">
+              {offer.providerName}
+            </span>
+            <span className="text-text-muted text-sm">
               {OFFER_TYPE_LABEL[offer.type]}
             </span>
           </>
         );
+        const badgeClassName = `bg-surface flex items-center gap-2 rounded-xl border px-3 py-2 transition ${hue.border}`;
 
         return (
           <li key={`${offer.providerId}-${offer.type}`}>
@@ -62,14 +72,12 @@ export function StreamingProvidersList({
                 href={offer.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2 transition hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-800"
+                className={`${badgeClassName} hover:bg-surface/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white`}
               >
                 {content}
               </a>
             ) : (
-              <div className="flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2">
-                {content}
-              </div>
+              <div className={badgeClassName}>{content}</div>
             )}
           </li>
         );

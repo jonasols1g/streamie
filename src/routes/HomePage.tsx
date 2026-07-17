@@ -10,27 +10,47 @@ import { useMediaSearch } from "../hooks/useMediaSearch";
  * Tekstsøk og talesøk (fase 8) går gjennom nøyaktig samme kodepath: begge
  * ender i dette `handleSearch(query)`-kallet (se
  * docs/design.md#søkeflyt-tekst-og-tale).
+ *
+ * Layout (se docs/design-spec/screenshots/01-sok.png og
+ * 02-sokeresultater.png): før noe søk er utført sentreres CineFind-wordmarken
+ * og søkefeltet vertikalt i en egen sone. Så snart et søk er utført (uansett
+ * utfall) vises feltet i normal, topp-ankret rekkefølge over resultatene —
+ * nøyaktig samme `useMediaSearch`-tilstand som før, kun ulik visuell
+ * plassering avhengig av `status`.
+ *
+ * `<h1>`-en er `sr-only`: skjermbildet viser ingen synlig "Søk"-tekst på
+ * selve siden (kun CineFind-wordmarken og fanenavnet i bunn-navigasjonen) —
+ * en skjult, semantisk korrekt sidetittel bevarer likevel a11y-strukturen og
+ * treffes fortsatt av eksisterende tester (`getByRole("heading", { name:
+ * "Søk" })` i App.test.tsx og e2e/deep-links.spec.ts).
  */
 export function HomePage() {
   const { status, results, errorCode, search, retry } = useMediaSearch();
+  const isIdle = status === "idle";
 
   function handleSearch(query: string) {
     search(query);
   }
 
   return (
-    <section>
-      <h1 className="text-2xl font-bold">Søk</h1>
-      <p className="mt-2 text-slate-600">
-        Søk etter filmer og serier du vil legge til i watchlisten din.
-      </p>
+    <div className={`flex flex-col ${isIdle ? "min-h-[65vh]" : ""}`}>
+      <h1 className="sr-only">Søk</h1>
 
-      <div className="mt-4 flex items-start gap-2">
-        <div className="flex-1">
-          <SearchBar onSubmit={handleSearch} />
-        </div>
-        <VoiceSearchButton onResult={handleSearch} />
-      </div>
+      <SearchBar
+        onSubmit={handleSearch}
+        centered={isIdle}
+        heading={
+          isIdle ? (
+            <p
+              aria-hidden="true"
+              className="font-heading text-brand-gradient text-[26px] font-bold"
+            >
+              CineFind
+            </p>
+          ) : undefined
+        }
+        trailingAction={<VoiceSearchButton onResult={handleSearch} />}
+      />
 
       <div className="mt-6">
         {status === "loading" && <LoadingSpinner label="Søker …" />}
@@ -44,9 +64,14 @@ export function HomePage() {
         )}
 
         {status === "success" && results.length > 0 && (
-          <SearchResultsGrid results={results} />
+          <>
+            <p className="text-text-muted mb-4 text-sm">
+              {results.length} treff
+            </p>
+            <SearchResultsGrid results={results} />
+          </>
         )}
       </div>
-    </section>
+    </div>
   );
 }

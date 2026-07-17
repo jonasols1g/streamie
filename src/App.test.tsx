@@ -29,7 +29,9 @@ describe("App", () => {
     render(<App />);
 
     await user.click(screen.getByRole("link", { name: "Watchlist" }));
-    await user.click(screen.getByRole("link", { name: "Hjem" }));
+    // NavBar-fanen til "/" heter "Søk" i CineFind-temaet (fase 11), ikke
+    // "Hjem" — se docs/design-spec/screenshots/.
+    await user.click(screen.getByRole("link", { name: "Søk" }));
 
     expect(screen.getByRole("heading", { name: "Søk" })).toBeInTheDocument();
   });
