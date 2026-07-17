@@ -34,12 +34,13 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Søk" })).toBeInTheDocument();
   });
 
-  it("viser detaljplassholder med id på /title/:id", () => {
+  it("viser detaljside med tittel fra MediaProvider på /title/:id", async () => {
     window.history.pushState({}, "", "/title/mock-movie-1");
     render(<App />);
 
-    expect(screen.getByRole("heading", { name: "Tittel" })).toBeInTheDocument();
-    expect(screen.getByText("mock-movie-1")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "The Matrix" }),
+    ).toBeInTheDocument();
   });
 
   it("viser 404-siden for ukjente ruter og lenker tilbake til hjem", async () => {
