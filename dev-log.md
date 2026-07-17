@@ -32,7 +32,9 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 - Fase 5 (søkeside) implementert via PR #4 med full agent-loop: `dev` → `reviewer` (godkjent uten funn) → `verifier` (grønn CI + drev søk manuelt mot produksjonsbygget: treff, tom-tilstand, klikk→detaljside, submit-only) → squash-merge. `SearchBar` + `useMediaSearch` (statusmaskin idle/loading/success/error, `AbortController` avbryter forrige kall og ved unmount) + `SearchResultsGrid`/`SearchResultCard`. Delte `components/common/{LoadingSpinner,EmptyState,ErrorMessage}` (feilkode→tekst ordrett fra design.md) og `components/media/PosterImage` (begge allerede i architecture.md sin mappestruktur). `HomePage` komponerer alt sammen.
 - Kjent, ikke-blokkerende funn fra `verifier`: `MockMediaProvider` (fase 2) sine `posterUrl`-verdier peker til `images.example.com`, som ikke finnes — gir `console.error` i nettleseren nå som postere faktisk rendres i UI. Ikke en fase 5-regresjon, men bør rettes (f.eks. et ekte plakat-CDN eller data-URI) før fase 6 (detaljside) og senere fasers watchlist-kort viser flere postere.
 
-**Neste:** fase 6 i `dev-tasks.md` (detaljside). Vurder samtidig å rydde opp i `MockMediaProvider`s `posterUrl`-verdier (se funn over) siden fase 6 også rendrer postere.
+- Fase 6 (detaljside) implementert via PR #5 med full agent-loop: `dev` → `reviewer` (godkjent uten funn) → `verifier` (grønn CI + drev detaljside manuelt mot produksjonsbygget mot fullstendig fixture, manglende plakat/RT-score, manglende streaming, serie-fixture og ukjent id) → squash-merge. `useMediaDetails` (auto-hent ved mount/id-endring, `AbortSignal`, `retry()`), `RatingsBadge`, `GenreTags`, `StreamingProvidersList` (tom-tilstand, kun `https:`-lenker klikkbare) og `TitleDetailPage` som komponerer dem. `WatchlistToggleButton` bevisst utelatt til fase 7. Mindre kosmetisk avvik (sentrert tom-tilstand-tekst i strømme-seksjonen) notert av `verifier`, ikke blokkerende.
+
+**Neste:** fase 7 i `dev-tasks.md` (watchlist-funksjonalitet).
 
 ## 2026-07-16
 

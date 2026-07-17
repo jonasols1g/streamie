@@ -13,7 +13,7 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 | 3 — Cache-lag | ✅ Ferdig 2026-07-17 |
 | 4 — App-skjelett | ✅ Ferdig 2026-07-17 |
 | 5 — Søkeside | ✅ Ferdig 2026-07-17 |
-| 6 — Detaljside | ☐ Ikke startet |
+| 6 — Detaljside | ✅ Ferdig 2026-07-17 |
 | 7 — Watchlist-funksjonalitet | ☐ Ikke startet |
 | 8 — Talesøk | ☐ Ikke startet |
 | 9 — Polish | ☐ Ikke startet |
@@ -59,8 +59,8 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 - [x] **Definition of done:** Søk mot `MockMediaProvider` viser resultater, klikk navigerer til detaljside.
 
 ## Fase 6 — Detaljside
-- [ ] Implementer `TitleDetailPage`, `useMediaDetails`, `RatingsBadge` (eksplisitt "ikke tilgjengelig" for manglende RT-score), `GenreTags`, `StreamingProvidersList` (tom-tilstand).
-- [ ] **Definition of done:** Detaljside viser alle felt fra en `Media`-fixture korrekt, inkludert null-tilfeller.
+- [x] Implementer `TitleDetailPage`, `useMediaDetails`, `RatingsBadge` (eksplisitt "ikke tilgjengelig" for manglende RT-score), `GenreTags`, `StreamingProvidersList` (tom-tilstand).
+- [x] **Definition of done:** Detaljside viser alle felt fra en `Media`-fixture korrekt, inkludert null-tilfeller.
 
 ## Fase 7 — Watchlist-funksjonalitet
 - [ ] Implementer `context/WatchlistContext.tsx` (reducer: `ADD`/`REMOVE`/`SET_STATUS`) og `services/storage/watchlistStorage.ts`.
