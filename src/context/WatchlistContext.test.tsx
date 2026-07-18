@@ -2,6 +2,10 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { WatchlistStorage } from "../services/storage/WatchlistRemoteStorage";
+import {
+  loadWatchlistFromStorage,
+  saveWatchlistToStorage,
+} from "../services/storage/watchlistStorage";
 import { createMediaSummary } from "../test/fixtures/media.fixtures";
 import { createWatchlistItem } from "../test/fixtures/watchlist.fixtures";
 import { createMockWatchlistStorage } from "../test/mocks/createMockWatchlistStorage";
@@ -413,7 +417,9 @@ describe("WatchlistContext — Firestore-hydrering", () => {
 
     // Handlingens egen skriving feiler og rulles tilbake — *mens* den
     // initiale hentingen fortsatt er underveis.
-    await waitFor(() => expect(result.current.isInWatchlist("mock-movie-1")).toBe(false));
+    await waitFor(() =>
+      expect(result.current.isInWatchlist("mock-movie-1")).toBe(false),
+    );
 
     // Hentingen resolverer først etterpå.
     await act(async () => {
@@ -424,6 +430,169 @@ describe("WatchlistContext — Firestore-hydrering", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     // Tittelen skal forbli borte — ikke gjenoppstå fra den avspilte køen.
     expect(result.current.isInWatchlist("mock-movie-1")).toBe(false);
+
+    errorSpy.mockRestore();
+  });
+});
+
+// DB-migrering issue D — se
+// docs/plans/watchlist-database-migrering.md#migrering-av-eksisterende-
+// localstorage-data. `migrateLocalWatchlistToCloud` (services/storage) er
+// selv enhetstestet i detalj (tomt/ikke-tomt utgangspunkt, flagget som
+// hindrer duplisering, feilet opplasting); disse testene dekker i stedet
+// selve *koblingen* inn i `WatchlistContext`s hydreringsflyt.
+describe("WatchlistContext — migrering av lokal watchlist til Firestore ved oppstart", () => {
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it("migrerer en eksisterende lokal watchlist til Firestore ved første hydrering, uten at elementet forsvinner fra UI-et", async () => {
+    const localItem = createWatchlistItem({ mediaId: "tt0000001" });
+    saveWatchlistToStorage([localItem]);
+
+    const load = vi.fn().mockResolvedValue([]);
+    const upsert = vi.fn().mockResolvedValue(undefined);
+    const storage = createMockWatchlistStorage({ load, upsert });
+
+    const { result } = renderHook(() => useWatchlist(), {
+      wrapper: wrapperWithStorage(storage, "user-1"),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(upsert).toHaveBeenCalledWith("user-1", localItem);
+    expect(result.current.isInWatchlist("tt0000001")).toBe(true);
+    expect(result.current.items).toEqual([localItem]);
+  });
+
+  // Reviewer-funn på PR #24 (samme racekategori som PR #23-reviewen, bare i
+  // migreringens eget async-vindu): den initiale versjonen nullstilte
+  // `isHydratingRef`/`pendingPatchesRef` rett etter `storage.load()`, FØR
+  // migreringens egen Firestore-opplasting (`await migrateLocalWatchlist-
+  // ToCloud(...)`) var ferdig. En handling utført i akkurat det vinduet ble
+  // dermed ikke køet som en gjør-om-patch, og ble stille overskrevet av den
+  // avsluttende `setItems(merged)` når migreringen fullførte.
+  it("bevarer en handling gjort mens migreringens Firestore-opplasting (ikke bare selve load()) pågår", async () => {
+    const localItem = createWatchlistItem({ mediaId: "tt0000001" });
+    saveWatchlistToStorage([localItem]);
+
+    const load = vi.fn().mockResolvedValue([]);
+    const deferredUpsert = createDeferred<void>();
+    const upsert = vi.fn().mockReturnValue(deferredUpsert.promise);
+    const storage = createMockWatchlistStorage({ load, upsert });
+
+    const { result } = renderHook(() => useWatchlist(), {
+      wrapper: wrapperWithStorage(storage, "user-1"),
+    });
+
+    // `load()` har resolvert (migreringen er i gang — `upsert` er kalt for
+    // det lokale elementet), men selve opplastingen henger fortsatt på
+    // `deferredUpsert`, så hydreringen (og dermed `isLoading`) er ikke
+    // ferdig ennå.
+    await waitFor(() =>
+      expect(upsert).toHaveBeenCalledWith("user-1", localItem),
+    );
+    expect(result.current.isLoading).toBe(true);
+
+    // Brukeren rekker å legge til en annen tittel mens migreringens
+    // opplasting fortsatt pågår.
+    act(() => {
+      result.current.addToWatchlist(
+        createMediaSummary({ id: "mock-movie-during-migration" }),
+      );
+    });
+    expect(result.current.isInWatchlist("mock-movie-during-migration")).toBe(
+      true,
+    );
+
+    // Migreringens opplasting fullføres.
+    await act(async () => {
+      deferredUpsert.resolve();
+      await deferredUpsert.promise;
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    // Tittelen lagt til under migreringsvinduet skal fortsatt være der —
+    // ikke stille overskrevet av migreringens avsluttende `setItems`.
+    expect(result.current.isInWatchlist("mock-movie-during-migration")).toBe(
+      true,
+    );
+    expect(result.current.isInWatchlist("tt0000001")).toBe(true);
+    expect(result.current.items).toHaveLength(2);
+  });
+
+  it("gjør ingen migrering når det ikke finnes noen lokal watchlist", async () => {
+    const load = vi.fn().mockResolvedValue([]);
+    const upsert = vi.fn().mockResolvedValue(undefined);
+    const storage = createMockWatchlistStorage({ load, upsert });
+
+    const { result } = renderHook(() => useWatchlist(), {
+      wrapper: wrapperWithStorage(storage, "user-1"),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(upsert).not.toHaveBeenCalled();
+    expect(result.current.items).toEqual([]);
+  });
+
+  it("migrerer ikke på nytt ved en påfølgende app-load — migreringsflagget hindrer duplisering", async () => {
+    const localItem = createWatchlistItem({ mediaId: "tt0000001" });
+    saveWatchlistToStorage([localItem]);
+
+    const firstLoad = vi.fn().mockResolvedValue([]);
+    const firstUpsert = vi.fn().mockResolvedValue(undefined);
+    const firstStorage = createMockWatchlistStorage({
+      load: firstLoad,
+      upsert: firstUpsert,
+    });
+
+    const { result: firstResult, unmount } = renderHook(() => useWatchlist(), {
+      wrapper: wrapperWithStorage(firstStorage, "user-1"),
+    });
+    await waitFor(() => expect(firstResult.current.isLoading).toBe(false));
+    expect(firstUpsert).toHaveBeenCalledTimes(1);
+    unmount();
+
+    // Simulerer neste app-load: en ny provider-instans (fersk `storage`),
+    // der Firestore nå faktisk inneholder elementet fra forrige migrering.
+    const secondLoad = vi.fn().mockResolvedValue([localItem]);
+    const secondUpsert = vi.fn().mockResolvedValue(undefined);
+    const secondStorage = createMockWatchlistStorage({
+      load: secondLoad,
+      upsert: secondUpsert,
+    });
+
+    const { result: secondResult } = renderHook(() => useWatchlist(), {
+      wrapper: wrapperWithStorage(secondStorage, "user-1"),
+    });
+    await waitFor(() => expect(secondResult.current.isLoading).toBe(false));
+
+    expect(secondUpsert).not.toHaveBeenCalled();
+    expect(secondResult.current.items).toEqual([localItem]);
+  });
+
+  it("setter ikke migreringsflagget når opplastingen feiler — items viser likevel de lokale elementene, og saveError settes", async () => {
+    const localItem = createWatchlistItem({ mediaId: "tt0000001" });
+    saveWatchlistToStorage([localItem]);
+
+    const load = vi.fn().mockResolvedValue([]);
+    const upsert = vi.fn().mockRejectedValue(new Error("nettverksfeil"));
+    const storage = createMockWatchlistStorage({ load, upsert });
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const { result } = renderHook(() => useWatchlist(), {
+      wrapper: wrapperWithStorage(storage, "user-1"),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.saveError).toBe(true);
+    expect(result.current.items).toEqual([localItem]);
+    // Lokale data er urørt — flagget er ikke satt, så et senere app-load
+    // (en ny provider-instans) prøver migreringen på nytt.
+    expect(loadWatchlistFromStorage()).toEqual([localItem]);
 
     errorSpy.mockRestore();
   });
