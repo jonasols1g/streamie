@@ -29,5 +29,5 @@ Oppgaver implementeres av subagent-teamet i `.claude/agents/`. Hovedsamtalen ork
 ## Rammer som gjelder alt arbeid
 
 - Dokumentasjonen i `docs/` er fasit; avvik er feil, og utdatert dokumentasjon rapporteres i stedet for at det improviseres rundt den.
-- All datatilgang går gjennom `MediaProvider`-interfacet; fase 1–9 bygger mot `MockMediaProvider`.
-- Ingen ekte API-kall før fase 10 — MOTN-kvoten er 100 kall/døgn. Playwright E2E kjører alltid mot stubbet nettverk og produksjonsbygg.
+- All datatilgang går gjennom `MediaProvider`-interfacet. Produksjon bruker `CompositeMediaProvider` (ekte OMDb-/MOTN-kall via `CachingMediaProvider`); `MockMediaProvider` er kun en testdobbel-mal for enhetstester.
+- MOTN-kvoten er 100 kall/døgn — cache-laget holder appen innenfor grensen ved normal bruk. Playwright E2E kjører alltid mot stubbet nettverk og produksjonsbygg, aldri ekte API-er.
