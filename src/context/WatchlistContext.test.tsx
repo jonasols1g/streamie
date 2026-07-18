@@ -465,6 +465,63 @@ describe("WatchlistContext — migrering av lokal watchlist til Firestore ved op
     expect(result.current.items).toEqual([localItem]);
   });
 
+  // Reviewer-funn på PR #24 (samme racekategori som PR #23-reviewen, bare i
+  // migreringens eget async-vindu): den initiale versjonen nullstilte
+  // `isHydratingRef`/`pendingPatchesRef` rett etter `storage.load()`, FØR
+  // migreringens egen Firestore-opplasting (`await migrateLocalWatchlist-
+  // ToCloud(...)`) var ferdig. En handling utført i akkurat det vinduet ble
+  // dermed ikke køet som en gjør-om-patch, og ble stille overskrevet av den
+  // avsluttende `setItems(merged)` når migreringen fullførte.
+  it("bevarer en handling gjort mens migreringens Firestore-opplasting (ikke bare selve load()) pågår", async () => {
+    const localItem = createWatchlistItem({ mediaId: "tt0000001" });
+    saveWatchlistToStorage([localItem]);
+
+    const load = vi.fn().mockResolvedValue([]);
+    const deferredUpsert = createDeferred<void>();
+    const upsert = vi.fn().mockReturnValue(deferredUpsert.promise);
+    const storage = createMockWatchlistStorage({ load, upsert });
+
+    const { result } = renderHook(() => useWatchlist(), {
+      wrapper: wrapperWithStorage(storage, "user-1"),
+    });
+
+    // `load()` har resolvert (migreringen er i gang — `upsert` er kalt for
+    // det lokale elementet), men selve opplastingen henger fortsatt på
+    // `deferredUpsert`, så hydreringen (og dermed `isLoading`) er ikke
+    // ferdig ennå.
+    await waitFor(() =>
+      expect(upsert).toHaveBeenCalledWith("user-1", localItem),
+    );
+    expect(result.current.isLoading).toBe(true);
+
+    // Brukeren rekker å legge til en annen tittel mens migreringens
+    // opplasting fortsatt pågår.
+    act(() => {
+      result.current.addToWatchlist(
+        createMediaSummary({ id: "mock-movie-during-migration" }),
+      );
+    });
+    expect(result.current.isInWatchlist("mock-movie-during-migration")).toBe(
+      true,
+    );
+
+    // Migreringens opplasting fullføres.
+    await act(async () => {
+      deferredUpsert.resolve();
+      await deferredUpsert.promise;
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    // Tittelen lagt til under migreringsvinduet skal fortsatt være der —
+    // ikke stille overskrevet av migreringens avsluttende `setItems`.
+    expect(result.current.isInWatchlist("mock-movie-during-migration")).toBe(
+      true,
+    );
+    expect(result.current.isInWatchlist("tt0000001")).toBe(true);
+    expect(result.current.items).toHaveLength(2);
+  });
+
   it("gjør ingen migrering når det ikke finnes noen lokal watchlist", async () => {
     const load = vi.fn().mockResolvedValue([]);
     const upsert = vi.fn().mockResolvedValue(undefined);

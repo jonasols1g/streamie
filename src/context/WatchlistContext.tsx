@@ -274,6 +274,12 @@ export interface WatchlistProviderProps {
  * Firestore (`migrateLocalWatchlistToCloud`, DB-migrering issue D) —
  * ventes på før `items` settes, slik at allerede-lokale elementer aldri
  * blinker bort bak et (typisk tomt) første Firestore-hentingsresultat.
+ * `isHydratingRef`/`pendingPatchesRef` dekker bevisst *begge* de asynkrone
+ * vinduene i denne flyten — både selve `load()`-kallet og migreringens
+ * egen Firestore-opplasting — slik at en handling utført mens *migreringen*
+ * pågår (ikke bare mens `load()` pågår) også fanges opp som en gjør-om-
+ * patch i stedet for å bli stille overskrevet av den avsluttende
+ * `setItems(merged)` (PR #24-reviewen).
  *
  * `items` speiles i en ref (`itemsRef`) som oppdateres i samme steg som
  * state settes, slik at flere handlinger i rask rekkefølge alltid bygger
@@ -315,16 +321,24 @@ export function WatchlistProvider({
       .load(userId)
       .then(async (remoteItems) => {
         hasHydratedOnceRef.current = true;
-        isHydratingRef.current = false;
 
-        // Spill av handlinger som ble utført mens hentingen var underveis,
+        // Spill av handlinger som ble utført mens `load()` var underveis,
         // oppå det hentede resultatet — dekker racen der f.eks. et
         // addToWatchlist-kall midt i en pågående henting ellers ville blitt
         // usynlig igjen idet hentingen resolver med et datasett fra før
-        // handlingen.
-        const patches = pendingPatchesRef.current;
+        // handlingen. `isHydratingRef.current` holdes bevisst `true` helt
+        // til migreringsvinduet under er ferdig (se der) — IKKE nullstilt
+        // her ennå, i motsetning til en tidligere versjon som reviewer
+        // fant en race i (PR #24-reviewen): handlinger utført mens
+        // migreringens *Firestore-opplasting* pågår må også fanges opp som
+        // gjør-om-patcher, ikke bare handlinger utført under selve
+        // `load()`-kallet.
+        const patchesFromLoad = pendingPatchesRef.current;
         pendingPatchesRef.current = [];
-        let merged = patches.reduce((acc, patch) => patch(acc), remoteItems);
+        let merged = patchesFromLoad.reduce(
+          (acc, patch) => patch(acc),
+          remoteItems,
+        );
 
         // Engangs-migrering av en eventuell eksisterende
         // localStorage-watchlist til Firestore (DB-migrering issue D), kun
@@ -346,7 +360,23 @@ export function WatchlistProvider({
               setSaveError(true);
             }
           }
+
+          // Spill av handlinger som ble utført mens migreringens
+          // Firestore-opplasting (selve `await` over) pågikk — samme
+          // prinsipp som `patchesFromLoad` over, bare for dette andre,
+          // separate async-vinduet.
+          const patchesFromMigration = pendingPatchesRef.current;
+          pendingPatchesRef.current = [];
+          merged = patchesFromMigration.reduce(
+            (acc, patch) => patch(acc),
+            merged,
+          );
         }
+
+        // Først nå, etter at *both* async-vinduene (load + evt. migrering)
+        // er ferdige, regnes hydreringen som over — enhver handling fra nå
+        // av skrives direkte, ikke som en køet gjør-om-patch.
+        isHydratingRef.current = false;
 
         itemsRef.current = merged;
         setItems(merged);
