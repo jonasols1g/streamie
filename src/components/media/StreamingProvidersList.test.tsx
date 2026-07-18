@@ -47,7 +47,6 @@ describe("StreamingProvidersList", () => {
     );
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    expect(screen.getByText("Abonnement")).toBeInTheDocument();
   });
 
   it("viser tilbud uten (eller med ugyldig) URL som ren tekst, ikke som lenke", () => {
@@ -67,5 +66,99 @@ describe("StreamingProvidersList", () => {
 
     expect(screen.getByText("NRK TV")).toBeInTheDocument();
     expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+
+  it("viser samme providerId kun én gang selv med flere tilbudstyper", () => {
+    render(
+      <StreamingProvidersList
+        streaming={createStreamingAvailability({
+          offers: [
+            {
+              providerId: "netflix",
+              providerName: "Netflix",
+              type: "subscription",
+              url: "https://www.netflix.com/title/20557937",
+            },
+            {
+              providerId: "netflix",
+              providerName: "Netflix",
+              type: "buy",
+              url: "https://www.netflix.com/title/20557937",
+            },
+            {
+              providerId: "netflix",
+              providerName: "Netflix",
+              type: "rent",
+              url: "https://www.netflix.com/title/20557937",
+            },
+          ],
+        })}
+      />,
+    );
+
+    expect(screen.getAllByText("Netflix")).toHaveLength(1);
+    expect(screen.getAllByRole("link")).toHaveLength(1);
+  });
+
+  it("dedupliserer på tvers av tjenester og beholder én badge per providerId", () => {
+    render(
+      <StreamingProvidersList
+        streaming={createStreamingAvailability({
+          offers: [
+            {
+              providerId: "netflix",
+              providerName: "Netflix",
+              type: "subscription",
+              url: "https://www.netflix.com/title/20557937",
+            },
+            {
+              providerId: "netflix",
+              providerName: "Netflix",
+              type: "buy",
+              url: "https://www.netflix.com/title/20557937",
+            },
+            {
+              providerId: "hbo-max",
+              providerName: "HBO Max",
+              type: "subscription",
+              url: "https://www.hbomax.com/no/title",
+            },
+          ],
+        })}
+      />,
+    );
+
+    expect(screen.getAllByText("Netflix")).toHaveLength(1);
+    expect(screen.getAllByText("HBO Max")).toHaveLength(1);
+    expect(screen.getAllByRole("link")).toHaveLength(2);
+  });
+
+  it("lenker ut når minst ett av flere tilbud for samme tjeneste har gyldig https-URL", () => {
+    render(
+      <StreamingProvidersList
+        streaming={createStreamingAvailability({
+          offers: [
+            {
+              providerId: "netflix",
+              providerName: "Netflix",
+              type: "rent",
+              url: undefined,
+            },
+            {
+              providerId: "netflix",
+              providerName: "Netflix",
+              type: "buy",
+              url: "https://www.netflix.com/title/20557937",
+            },
+          ],
+        })}
+      />,
+    );
+
+    const link = screen.getByRole("link", { name: /Netflix/ });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://www.netflix.com/title/20557937",
+    );
   });
 });
