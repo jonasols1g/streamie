@@ -4,6 +4,8 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 
 ## 2026-07-18
 
+- Spisset instruksjonene til de fire sub-agentene (`dev`, `reviewer`, `verifier`, `feature-planner`) i `.claude/agents/` for lavere token- og testkostnad, committet direkte på `main` (ingen kode rørt): docs-lesing målrettes med `grep -n "^#"` mot overskrifter i stedet for full-fil-lesing, `dev` kjører målrettede tester under iterasjon og full `npm test` kun rett før push, CI-logger hentes bare for feilende sjekker (ikke grønne), `verifier` kan nå hoppe over den manuelle flyten for rene docs-/test-differ, og `feature-planner` filtrerer åpne issues på nøkkelord fremfor å lese alle i sin helhet.
+
 - Fase 11 (visuelt redesign, CineFind-tema) lagt til i faseplanen og implementert samme dag. Bruker leverte en tekstlig design-spec med fire hifi-skjermbilder (`docs/design-spec/`) — en statisk HTML-mockup som skulle gjenskapes i den eksisterende React/Tailwind-stacken, ikke kopieres direkte. Bruker ba eksplisitt om å hoppe over `feature-planner`, siden dette er en restyling av allerede planlagte sider (fase 5–9), ikke en ny feature.
 - Faseplan og designdokumentasjon oppdatert direkte på `main` før implementasjon (jf. praksis fra PR #10): `docs/design.md` fikk en ny seksjon som oppsummerer fargepalett/typografi/hue-mekanikk, `docs/dev-tasks.md` fikk fase 11s oppgaveliste.
 - Implementert via PR #11 med full agent-loop: `dev` → `reviewer` (godkjent uten funn) → `verifier` (grønn CI + drev hele flyten manuelt mot produksjonsbygget: tom-tilstand → søk → søkeresultater → detaljside → legg til i watchlist → watchlist-siden, sammenlignet visuelt mot alle fire referanseskjermbildene) → squash-merge.
