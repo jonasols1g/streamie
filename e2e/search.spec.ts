@@ -1,7 +1,17 @@
 import { expect, test } from "@playwright/test";
+import { registerApiStubs } from "./fixtures/apiStubs.ts";
 
-// Søk kjører mot MockMediaProvider (ingen nettverkskall å stubbe i fase 1–9,
-// se docs/dev-tasks.md fase 5).
+// Fase 10: appen kjører nå mot `CompositeMediaProvider` (ekte OMDb-/MOTN-kall)
+// i stedet for `MockMediaProvider`. Dette `beforeEach`-kallet er eneste
+// endring i denne filen — det kobler inn `page.route`-stubbing (se
+// e2e/fixtures/apiStubs.ts) slik at testene aldri gjør ekte nettverkskall.
+// Selve testene under er uendret fra fase 5.
+test.beforeEach(async ({ page }) => {
+  await registerApiStubs(page);
+});
+
+// Søk kjører mot en stubbet OMDb (se e2e/fixtures/apiStubs.ts) — ingen ekte
+// nettverkskall (se docs/dev-tasks.md fase 10).
 test.describe("Søk", () => {
   test("søk gir resultater, og klikk på et kort navigerer til detaljsiden", async ({
     page,

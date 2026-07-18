@@ -1,7 +1,35 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
+
+// `App.tsx` importerer det app-brede, sammensatte `mediaProvider`-
+// singletonet direkte fra `services/media` (fase 10: `CompositeMediaProvider`
+// mot ekte OMDb/MOTN-kall). Denne modultesten skal aldri gjøre ekte
+// nettverkskall, så modulen mockes til en enkel testdobbel med samme
+// fixture-data (`mock-movie-1` → "The Matrix") som resten av fase 1–9s
+// tester forventer — se docs/dev-tasks.md fase 10 (all testing bruker
+// mockede/stubbede kall, aldri ekte API-er).
+vi.mock("./services/media", () => ({
+  mediaProvider: {
+    id: "mock",
+    search: vi.fn().mockResolvedValue([]),
+    getDetails: vi.fn().mockResolvedValue({
+      id: "mock-movie-1",
+      mediaType: "movie",
+      title: "The Matrix",
+      releaseYear: 1999,
+      posterUrl: "https://images.example.com/posters/the-matrix.jpg",
+      providerId: "mock",
+      overview:
+        "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+      genres: ["Action", "Sci-Fi"],
+      ratings: { imdbScore: 8.7, rottenTomatoesScore: 83 },
+      streaming: null,
+      runtimeMinutes: 136,
+    }),
+  },
+}));
 
 describe("App", () => {
   beforeEach(() => {
