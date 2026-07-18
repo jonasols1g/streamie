@@ -58,7 +58,13 @@ Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag 
 - Seks bevisste, mindre avvik fra pixel-perfect (NavBar-tekst, watchlist-tittel, stjerne-toggles skop, ekstra statuslenke, hero som gjenbruker `posterUrl`, hero-breakout begrenset til `<main>`) ble vurdert og godkjent av både `reviewer` og `verifier` — alle bevarer eksisterende, testdekket funksjonalitet fra fase 5–9. Se detaljene i `docs/dev-tasks.md` under fase 11.
 - Ingen nye API-kall, ingen endring i MOTN/OMDb-forberedelsene for fase 10.
 
-**Neste:** Pages-beslutningen står fortsatt åpen (se over) — ellers er fase 10 (ekte API-integrasjon) neste større milepæl.
+- Pages-beslutningen tatt: bruker valgte å gjøre repoet `jonasols1g/watchlist` **offentlig** (fremfor GitHub Pro), bekreftet via `gh repo edit --visibility public`. Løser opp både fase 9s utsatte punkt og fase 10s Pages-oppgave.
+- Fase 10 (ekte API-integrasjon) satt i gang samme dag, med ett bevisst avvik fra oppgavelisten: bruker valgte å starte implementasjonen **før** OMDb-/MOTN-nøkler er skaffet (nøkkelanskaffelse er en oppgave kun bruker kan gjøre). Alt annet i fasen ble gjennomført via PR #12 med full agent-loop: `dev` → `reviewer` (godkjent uten funn) → `verifier` (grønn CI, 212 enhetstester + 11 E2E-tester, manuell kjøring mot produksjonsbygg — bekreftet bl.a. at et 401-svar fra OMDb pga. manglende nøkkel gir tydelig feilmelding i UI og logging i konsollen, akkurat som DoD krever) → squash-merge.
+- Implementert: `OmdbMediaProvider`, `MotnMediaProvider`, `CompositeMediaProvider` med all mapping/feilhåndtering/URL-validering fra `architecture.md`, utvidet CSP, `Footer` med attribusjon, `services/media/index.ts` byttet til `CompositeMediaProvider`, data-versjon bumpet til `v2`, og en ny `deploy`-jobb i CI-workflowen (build → `configure-pages` → `upload-pages-artifact` → `deploy-pages`, gatet på push til `main`). `.env.example` dokumenterer de to nødvendige miljøvariablene.
+- Reelt funn underveis (fikset av `dev` i samme runde, ikke en review-runde): delt `beforeEach`-modul for E2E-stubbing var flaky under parallellisering — ES-modulcache gjorde at kun første spec-fil per worker fikk stubbingen, resten gjorde ekte (feilende) kall mot `omdbapi.com`. Løst ved at hver spec-fil kaller `registerApiStubs(page)` i sin egen `beforeEach`.
+- **Gjenstår før fase 9 og 10 kan hakes helt av:** bruker må skaffe ekte OMDb-/MOTN-nøkler, legge dem i `.env.local` og som GitHub Actions-secrets, og sette repoets Settings → Pages → Source til «GitHub Actions» (engangs, manuell innstilling) — deretter kan «fungerer mot ekte data i produksjon på Pages» verifiseres for begge fasers DoD.
+
+**Neste:** Bruker skaffer OMDb-/MOTN-nøkler og aktiverer Pages-Source i repo-settings; deretter gjenstår kun den siste produksjonsverifiseringen for å hake av fase 9 og fase 10 i sin helhet.
 
 ## 2026-07-16
 
