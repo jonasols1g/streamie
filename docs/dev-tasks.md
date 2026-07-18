@@ -16,8 +16,8 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 | 6 — Detaljside | ✅ Ferdig 2026-07-17 |
 | 7 — Watchlist-funksjonalitet | ✅ Ferdig 2026-07-17 |
 | 8 — Talesøk | ✅ Ferdig 2026-07-17 |
-| 9 — Polish | 🟡 Delvis 2026-07-18 (produksjonsverifisering på Pages avventer) |
-| 10 — Ekte API-integrasjon | 🟡 Delvis 2026-07-18 (ekte API-nøkler mangler) |
+| 9 — Polish | ✅ Ferdig 2026-07-18 |
+| 10 — Ekte API-integrasjon | ✅ Ferdig 2026-07-18 |
 | 11 — Visuelt redesign (CineFind) | ✅ Ferdig 2026-07-18 |
 
 ## Fase 1 — Prosjektoppsett
@@ -85,7 +85,7 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 - [x] ~~Aktiver GitHub Pages-publisering fra CI-workflowen~~ — utsatt til, og gjennomført i, fase 10 (PR #12, 2026-07-18): repoet ble gjort offentlig, og `deploy`-jobben (build → `configure-pages` → `upload-pages-artifact` → `deploy-pages`) er nå i `.github/workflows/ci.yml`, gatet på push til `main` etter grønn test+E2E.
 - [x] **E2E** (`e2e/deep-links.spec.ts`): last `/watchlist/title/<id>` direkte og refresh på hver rute — verifiserer 404.html-fallbacken og `basename`-oppsettet. Dette er den mest verdifulle E2E-testen i prosjektet: SPA-fallback på GitHub Pages er nettopp den typen feil som kun oppstår i produksjonsbygget og aldri i `npm run dev`.
 - [x] **E2E:** kjør hele suiten mot produksjonsbygget (`vite preview` med `base: '/watchlist/'`), ikke bare mot dev-serveren. (På plass siden fase 1s `playwright.config.ts`.)
-- [ ] **Definition of done:** Manuell gjennomgang av alle sider på mobil- og desktop-bredde, ingen ubehandlede tilstander ✅. E2E-suiten er grønn mot produksjonsbygget i CI ✅. I produksjon på Pages: dyplenker (`…/watchlist/title/<id>` lastet direkte) og refresh fungerer på alle ruter — **ikke verifiserbart før repoets Settings → Pages → Source settes til «GitHub Actions» og appen deployes**. DoD hakes av i sin helhet når dette siste punktet er bekreftet i produksjon.
+- [x] **Definition of done:** Manuell gjennomgang av alle sider på mobil- og desktop-bredde, ingen ubehandlede tilstander ✅. E2E-suiten er grønn mot produksjonsbygget i CI ✅. I produksjon på Pages (`https://jonasols1g.github.io/watchlist/`): dyplenke til `/title/tt0133093` lastet direkte og `page.reload()` fungerer på alle ruter — verifisert 2026-07-18.
 
 **Merk:** E2E erstatter ikke den manuelle gjennomgangen — responsivt design og visuell polish på tvers av skjermbredder verifiseres fortsatt manuelt. Det er ingen visuell regresjonstesting (screenshot-diffing) i v1.
 
@@ -100,7 +100,7 @@ Forutsetninger som var åpne, og nå er avklart (fakta, ingen oppgaver):
 
 ### Oppgaver
 
-- [ ] Skaff nøkler: OMDb (<https://www.omdbapi.com/apikey.aspx>) og MOTN Developers Platform (gratisplan, ingen betalingsinfo). Legg dem i `.env.local` (git-ignorert) og som GitHub Actions-secrets; `.env.example` dokumenterer `VITE_OMDB_API_KEY` og `VITE_MOTN_API_KEY` (opprettet i PR #12). Vite krever `VITE_`-prefiks for at variabelen skal nå klientbundelen — og det betyr samtidig at nøklene er lesbare for sluttbruker (akseptert, se [risikoer](./architecture.md#kjente-forutsetninger-og-risikoer)). **Gjenstår:** bruker har bevisst utsatt selve nøkkelanskaffelsen — koden er klar, men ekte nøkler er ikke skaffet eller lagt inn i `.env.local`/GitHub Actions-secrets ennå.
+- [x] Skaff nøkler: OMDb (<https://www.omdbapi.com/apikey.aspx>) og MOTN Developers Platform (gratisplan, ingen betalingsinfo). Lagt i `.env.local` (git-ignorert) og som GitHub Actions-secrets; `.env.example` dokumenterer `VITE_OMDB_API_KEY` og `VITE_MOTN_API_KEY` (opprettet i PR #12). Vite krever `VITE_`-prefiks for at variabelen skal nå klientbundelen — og det betyr samtidig at nøklene er lesbare for sluttbruker (akseptert, se [risikoer](./architecture.md#kjente-forutsetninger-og-risikoer)).
 - [x] Implementer `OmdbMediaProvider` (`search` via `?s=`, `getDetails` via `?i=tt…`). Mapping håndterer fallgruvene i [OMDb-mapping](./architecture.md#omdb-mapping--kjente-fallgruver): `Response: "False"` ved HTTP 200, `"N/A"`-strenger → `null`, RT-score fra `Ratings`-arrayet, alle tallfelter som strenger.
 - [x] Implementer `MotnMediaProvider.getStreaming(imdbId)` mot `GET /shows/{id}?country=no` med `X-API-Key`-header. Mapper MOTNs `streamingOptions` → `StreamingAvailability`. Ikke-funnet returnerer `null`, kaster ikke.
 - [x] Implementer `CompositeMediaProvider`: `search` går kun til OMDb; `getDetails` kaller begge i parallell med `Promise.all`, der MOTN-feil degraderes til `streaming: null`.
@@ -110,7 +110,7 @@ Forutsetninger som var åpne, og nå er avklart (fakta, ingen oppgaver):
 - [x] Legg til `Footer` med attribusjon (se [design.md](./design.md#attribusjon)).
 - [x] Bytt `services/media/index.ts` fra `MockMediaProvider` til `CompositeMediaProvider`.
 - [x] Bump data-versjonen til `watchlist:v2:data:` — eksisterende watchlist fra mock-fasen slettes bevisst, ingen migrasjonslogikk (se [architecture.md](./architecture.md#kjente-forutsetninger-og-risikoer)).
-- [x] Aktiver GitHub Pages-publisering fra CI-workflowen (bygg + `actions/deploy-pages`; `base`/`basename`/404-fallback på plass siden fase 1, CSP injiseres kun ved build siden PR #9). Bruker gjorde repoet offentlig 2026-07-18 for å muliggjøre dette. **Gjenstår:** repoets Settings → Pages → Source må settes til «GitHub Actions» manuelt (engangs repo-innstilling) før første faktiske deploy skjer.
+- [x] Aktiver GitHub Pages-publisering fra CI-workflowen (bygg + `actions/deploy-pages`; `base`/`basename`/404-fallback på plass siden fase 1, CSP injiseres kun ved build siden PR #9). Bruker gjorde repoet offentlig 2026-07-18; Settings → Pages → Source satt til «GitHub Actions» samme dag. Live på `https://jonasols1g.github.io/watchlist/`.
 
 ### Testing
 
@@ -129,7 +129,7 @@ E2E med stubbede API-responser:
 - [x] Detaljside der OMDb-stubben mangler RT-score → «Ikke tilgjengelig» vises.
 - [x] OMDb-stubben svarer 429 → feilmeldingen for `rate-limit` vises med «prøv igjen»-handling.
 
-- [ ] **Definition of done:** `CompositeMediaProvider` erstatter `MockMediaProvider` i `services/media/index.ts` uten at noe i UI-, hook- eller context-laget måtte endres ✅ (PR #12, godkjent i review og verifisert grønt 2026-07-18). Søk, detaljvisning (inkl. en tittel uten strømmetilbud og en uten RT-score) og watchlist er bevist mot stubbet nettverk i E2E-suiten ✅. **Gjenstår:** fungerer mot *ekte* data i produksjon på Pages — bruker må skaffe OMDb-/MOTN-nøkler, legge dem inn i `.env.local` og GitHub Actions-secrets, og aktivere Pages-Source i repo-settings, før dette siste punktet kan verifiseres og DoD hakes av i sin helhet.
+- [x] **Definition of done:** `CompositeMediaProvider` erstatter `MockMediaProvider` i `services/media/index.ts` uten at noe i UI-, hook- eller context-laget måtte endres ✅ (PR #12, godkjent i review og verifisert grønt 2026-07-18). Søk, detaljvisning (inkl. en tittel uten strømmetilbud) og watchlist er bevist mot stubbet nettverk i E2E-suiten ✅. Verifisert 2026-07-18 mot ekte data i produksjon på `https://jonasols1g.github.io/watchlist/`: søk på «Matrix» ga ekte OMDb-treff, detaljside for `tt0133093` viste ekte IMDb-/RT-score, sjangre og MOTN-strømmetilbud (Apple TV, Prime Video), og en tittel uten strømmetilbud i regionen viste korrekt tom-tilstand.
 
 ## Fase 11 — Visuelt redesign (CineFind-tema)
 
