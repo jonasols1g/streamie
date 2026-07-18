@@ -16,6 +16,12 @@ import { defaultExclude, defineConfig, type Plugin } from "vitest/config";
 // Fase 11 (CineFind-temaet) laster Space Grotesk/Manrope fra Google Fonts:
 // stilarket ligger på fonts.googleapis.com (style-src), selve fontfilene
 // lastes derfra videre fra fonts.gstatic.com (font-src).
+//
+// Fase 10 (ekte API-integrasjon) legger til domenene for OMDb og MOTN i
+// connect-src (selve API-kallene) og img-src (plakater/logoer) — se
+// docs/architecture.md#robusthet-og-sikkerhet. OMDbs plakat-URL-er peker på
+// Amazons bilde-CDN (m.media-amazon.com), ikke på omdbapi.com; MOTN-domenet
+// trengs kun for strømmetjenestenes logoer.
 function cspMetaTagPlugin(): Plugin {
   return {
     name: "csp-meta-tag",
@@ -27,7 +33,7 @@ function cspMetaTagPlugin(): Plugin {
           attrs: {
             "http-equiv": "Content-Security-Policy",
             content:
-              "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'",
+              "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://m.media-amazon.com https://media.movieofthenight.com; connect-src 'self' https://www.omdbapi.com https://api.movieofthenight.com; base-uri 'self'; form-action 'self'",
           },
           injectTo: "head-prepend",
         },

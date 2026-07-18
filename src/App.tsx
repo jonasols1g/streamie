@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Footer } from "./components/layout/Footer";
 import { NavBar } from "./components/layout/NavBar";
 import { WatchlistSaveErrorBanner } from "./components/watchlist/WatchlistSaveErrorBanner";
 import { MediaProviderProvider } from "./context/MediaProviderContext";
@@ -27,6 +28,7 @@ export function App() {
               <Route path="/title/:id" element={<TitleDetailPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
+            <Footer />
           </main>
           <NavBar />
         </BrowserRouter>

@@ -3,6 +3,9 @@ name: CI
 on:
   push:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Lint, enhetstester, audit og bygg
@@ -19,7 +22,9 @@ jobs:
       # Brekk bygget på sårbarheter med høy/kritisk alvorlighetsgrad.
       - run: npm audit --audit-level=high
       # Bygg-scriptet kopierer dist/index.html -> dist/404.html (SPA-fallback
-      # for GitHub Pages). Selve Pages-publiseringen aktiveres i fase 9.
+      # for GitHub Pages). Secrets finnes kun i CI (ikke i PR-er fra forks),
+      # så denne bygg-verifiseringen kjører uten dem — appen bygger fint med
+      # tomme nøkler, se docs/dev-tasks.md fase 10.
       - run: npm run build
 
   e2e:
@@ -33,8 +38,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps
-      # webServer i playwright.config.ts bygger og starter vite preview
-      # mot produksjonsbygget.
+      # webServer i playwright.config.ts bygger og starter vite preview mot
+      # produksjonsbygget. E2E kjører alltid mot stubbet nettverk (page.route,
+      # se e2e/fixtures/apiStubs.ts) — aldri mot ekte OMDb-/MOTN-kall, så
+      # API-nøkler trengs ikke her (se docs/architecture.md#teststrategi).
       - run: npx playwright test
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -42,3 +49,42 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  deploy:
+    name: Publiser til GitHub Pages
+    needs: [test, e2e]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # API-nøklene bakes inn i klientbundelen ved build (VITE_-prefiks
+      # kreves for at Vite skal eksponere dem, se docs/architecture.md#kjente-
+      # forutsetninger-og-risikoer). Secretsene er ikke lagt inn i
+      # repo-innstillingene ennå — inntil de er det, bygger appen med tomme
+      # nøkler (bevisst, se docs/dev-tasks.md fase 10); dette skal aldri
+      # brekke selve bygget/publiseringen.
+      - run: npm run build
+        env:
+          VITE_OMDB_API_KEY: ${{ secrets.VITE_OMDB_API_KEY }}
+          VITE_MOTN_API_KEY: ${{ secrets.VITE_MOTN_API_KEY }}
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

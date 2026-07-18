@@ -1,10 +1,17 @@
 import { expect, test } from "@playwright/test";
+import { registerApiStubs } from "./fixtures/apiStubs.ts";
 
-// Watchlist kjører mot MockMediaProvider (ingen nettverkskall å stubbe i
-// fase 1–9, se docs/dev-tasks.md fase 7) og persisterer til ekte
-// `localStorage` i nettleseren — persistens over en sideoppdatering er
-// nettopp det enhetstester ikke fanger, og hovedgrunnen til at denne
-// E2E-testen er verdt det.
+// Fase 10: se e2e/search.spec.ts for hvorfor dette `beforeEach`-kallet er
+// eneste endring i denne filen (kobler inn page.route-stubbing av
+// OMDb/MOTN, selve testen er uendret fra fase 7).
+test.beforeEach(async ({ page }) => {
+  await registerApiStubs(page);
+});
+
+// Watchlist kjører mot en stubbet OMDb (se e2e/fixtures/apiStubs.ts) og
+// persisterer til ekte `localStorage` i nettleseren — persistens over en
+// sideoppdatering er nettopp det enhetstester ikke fanger, og hovedgrunnen
+// til at denne E2E-testen er verdt det.
 test.describe("Watchlist", () => {
   test("legg til fra søkeresultat, tittelen vises under «Planlagt», bytt status til «Sett», og statusen overlever page.reload()", async ({
     page,
