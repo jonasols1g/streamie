@@ -22,6 +22,14 @@ import { defaultExclude, defineConfig, type Plugin } from "vitest/config";
 // docs/architecture.md#robusthet-og-sikkerhet. OMDbs plakat-URL-er peker på
 // Amazons bilde-CDN (m.media-amazon.com), ikke på omdbapi.com; MOTN-domenet
 // trengs kun for strømmetjenestenes logoer.
+//
+// DB-migrering issue A (se docs/plans/watchlist-database-migrering.md)
+// legger til Firebase-domenene i connect-src: Firestore
+// (firestore.googleapis.com) og Anonymous Auth
+// (identitytoolkit.googleapis.com for innlogging,
+// securetoken.googleapis.com for token-fornyelse). `firebaseClient.ts` er
+// ikke i bruk fra noe sted i produksjonskoden ennå (kommer i issue B/C),
+// så disse domenene gir ingen ekte trafikk før da.
 function cspMetaTagPlugin(): Plugin {
   return {
     name: "csp-meta-tag",
@@ -33,7 +41,7 @@ function cspMetaTagPlugin(): Plugin {
           attrs: {
             "http-equiv": "Content-Security-Policy",
             content:
-              "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://m.media-amazon.com https://media.movieofthenight.com; connect-src 'self' https://www.omdbapi.com https://api.movieofthenight.com; base-uri 'self'; form-action 'self'",
+              "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://m.media-amazon.com https://media.movieofthenight.com; connect-src 'self' https://www.omdbapi.com https://api.movieofthenight.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; base-uri 'self'; form-action 'self'",
           },
           injectTo: "head-prepend",
         },
