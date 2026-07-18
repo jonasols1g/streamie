@@ -173,6 +173,8 @@ watchlist/
 │   ├── search.spec.ts           # fase 5
 │   ├── watchlist.spec.ts        # fase 7
 │   ├── deep-links.spec.ts       # fase 9
+│   ├── api-integration.spec.ts  # fase 10, ekte API-integrasjon (stubbet)
+│   ├── smoke.spec.ts            # triviell røyktest for /watchlist/-understien
 │   ├── watchlist-migration.spec.ts   # DB-migrering issue D
 │   └── fixtures/
 │       ├── apiStubs.ts          # page.route-stubber for OMDb/MOTN
