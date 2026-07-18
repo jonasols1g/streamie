@@ -2,16 +2,16 @@
 
 `watchlist` er en nettapplikasjon for å slå opp filmer og serier, se informasjon om dem (bilde, beskrivelse, sjanger, IMDb-score, Rotten Tomatoes-score, strømmetjenester) og holde en personlig oversikt over hva man planlegger å se og hva man har sett.
 
-Appen er **100 % klient-side** — det finnes ingen backend. All state (watchlist og cache av søk/oppslag) lagres i nettleserens `localStorage`. Data hentes fra to API-er som begge kalles direkte fra nettleseren: **OMDb** for søk og titteldata, og **Movie of the Night** for strømmetilgjengelighet (se [Datakilder](./architecture.md#datakilder)). Selve integrasjonen er en egen, senere fase — fase 1–9 bygges mot en `MockMediaProvider` (se [dev-tasks.md](./dev-tasks.md)).
+Appen er **100 % klient-side** — det finnes ingen backend. All state (watchlist og cache av søk/oppslag) lagres i nettleserens `localStorage`. Data hentes fra to API-er som begge kalles direkte fra nettleseren: **OMDb** for søk og titteldata, og **Movie of the Night** for strømmetilgjengelighet (se [Datakilder](./architecture.md#datakilder)).
 
 ## Dokumenter
 
-- **[todo.md](./todo.md)** — Småting som må på plass før fase 1 kan starte. **Start her.**
 - **[architecture.md](./architecture.md)** — Teknisk arkitektur: lagdeling, prosjektstruktur, `MediaProvider`-abstraksjonen, caching-design, state management og kjente forutsetninger/risikoer.
 - **[data-model.md](./data-model.md)** — TypeScript-datamodell for media, ratings, streaming-tilgjengelighet, watchlist-oppføringer og cache.
 - **[design.md](./design.md)** — Sider/ruter, søkeflyt (tekst og tale), visning av oppslagsresultater, watchlist-UX og styling-tilnærming.
-- **[dev-tasks.md](./dev-tasks.md)** — Faseinndelt utviklingsrekkefølge for implementasjonen.
 - **[dev-log.md](../dev-log.md)** — Daglig logg over hva som er gjort (ligger i prosjektroten).
+
+Oppgavesporing skjer i GitHub-prosjektet [«Watchlist»](https://github.com/users/jonasols1g/projects/2) — ikke lenger i `docs/`. Det arkiverte **[archive/dev-tasks.md](./archive/dev-tasks.md)** viser fase-for-fase-planen appen opprinnelig ble bygget etter (alle 11 faser er ferdige).
 
 ## Nøkkelbeslutninger (kort)
 

@@ -93,3 +93,14 @@ Fasit for farger, typografi og layout er [docs/design-spec/README.md](./design-s
 - **Bunn-fanebar** erstatter dagens `NavBar`-lenker visuelt (samme to ruter, `/` og `/mylist`): fast posisjon, 78px, gjennomsiktig/blur, aktiv fane i magenta.
 - **Stjerne-toggle** (søkeresultat-kort og watchlist-rad) viser samme "i watchlist"-tilstand som i dag (`WatchlistToggleButton`), kun restylet — fylt hue-bakgrunn når lagt til, gjennomsiktig mørk når ikke.
 - Alle eksisterende tilstander (lasting/tom/feil, a11y, tastaturnavigasjon) videreføres uendret — dette er en restyling av eksisterende sider (fase 5–9s `SearchResultCard`, `TitleDetailPage`, `WatchlistItemCard`, `NavBar`), ikke en ny flyt.
+
+### Bevisste avvik fra pixel-perfect
+
+Disse seks punktene er endelige, `reviewer`-/`verifier`-godkjente beslutninger — ikke gjenstående arbeid:
+
+- Bunn-fanebarens `/`-fane heter «Søk» (matcher design-spec-teksten), ikke «Hjem» som tidligere.
+- `WatchlistPage`s `<h1>` beholder teksten «Watchlist» (ikke «Min liste» som i skjermbildet), fordi eksisterende tester forventer nøyaktig den teksten; antallet vises som søsken-element.
+- `WatchlistStarToggle` på søkeresultat-kort legger kun til/fjerner (bytter ikke planlagt/sett) — synlig statustekst beholdt for å bevare eksisterende E2E-atferd. Statusbytte skjer fortsatt via `WatchlistToggleButton`/`WatchlistItemCard`.
+- `WatchlistItemCard` beholder en sekundær «Merk som sett/planlagt»-lenke ved siden av stjernen (skjermbildet viser kun stjerne), for å bevare eksisterende fase 7-funksjonalitet.
+- Detaljside-heroen gjenbruker `posterUrl` (intet eget backdrop-felt i `data-model.md`).
+- Full-bleed hero bryter kun ut av `<main>`s egen padding, ikke hele viewport på bred desktop (appen skal forbli responsiv; design-spec-en er en 390px mobil-mockup).

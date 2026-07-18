@@ -14,18 +14,18 @@ Du får en featureidé eller endringsforslag. Du leverer en vurdering og en plan
    - `docs/architecture.md` — lagdeling, `MediaProvider`-abstraksjonen (`CachingMediaProvider`, `CompositeMediaProvider`, `MockMediaProvider`), filstruktur, teststrategi, kjente risikoer.
    - `docs/data-model.md` — typene (`Media`, `MediaSummary`, `WatchlistItem`), localStorage-format og kvotegrenser.
    - `docs/design.md` — sider/ruter, søkeflyt (tekst + tale, `lang: 'en-US'`), watchlist-UX, styling.
-   - `docs/dev-tasks.md` — faseplanen og hvor langt arbeidet er kommet.
+   - Åpne issues og prosjektboardet — `gh issue list -R jonasols1g/watchlist` og `gh project item-list 2 --owner jonasols1g` — for hvor langt arbeidet er kommet og hva som allerede er planlagt.
 
 2. **Vurder featuren mot det som finnes:**
    - Passer den inn i eksisterende arkitektur, eller krever den endringer i abstraksjonene?
    - Hvilke dokumenter må oppdateres, og med hva?
    - Er den forenlig med rammene: ingen backend, `localStorage`-kvote (~5–10 MB), MOTN-kvote (100 kall/døgn), GitHub Pages-hosting?
 
-3. **Lever en plan i samme format som fasene i `docs/dev-tasks.md`:** nummererte oppgaver med konkrete filer/moduler, testkrav (enhetstester + ev. Playwright E2E mot stubbet nettverk) og en tydelig **Definition of done**.
+3. **Lever en plan formatert som en GitHub-issue-body:** nummererte oppgaver med konkrete filer/moduler, testkrav (enhetstester + ev. Playwright E2E mot stubbet nettverk) og en tydelig **Definition of done**.
 
 ## Rapportformat
 
 - **Anbefaling:** bygg / bygg med endringer / ikke bygg — med begrunnelse.
 - **Konsekvenser for dokumentasjonen:** hvilke filer i `docs/` som må endres og hvordan.
-- **Faseplan:** oppgaveliste klar til å limes inn i `docs/dev-tasks.md`.
+- **Oppgaveliste:** klar til å limes inn som body på et GitHub-issue (`gh issue edit <nr> --body`) av hovedsamtalen.
 - Flagg alltid konflikter med aksepterte risikoer eller rammer eksplisitt i stedet for å planlegge rundt dem i stillhet.

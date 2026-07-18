@@ -279,7 +279,7 @@ export const mediaProvider: MediaProvider = new CachingMediaProvider(
 );
 ```
 
-`MockMediaProvider` brukes både som midlertidig app-drivende provider (til et ekte API velges, se fase 10 i [dev-tasks.md](./dev-tasks.md)) og som testdobbel-mal.
+`MockMediaProvider` brukes både som midlertidig app-drivende provider (frem til `CompositeMediaProvider` ble tatt i bruk, se [Datakilder](#datakilder)) og som testdobbel-mal.
 
 **RT-score:** `ratings.rottenTomatoesScore` er alltid `number | null` gjennom hele stacken. OMDb leverer RT-score via sitt `Ratings`-array, men kun for et delsett av titlene — feltet mangler i praksis ofte. `RatingsBadge`-komponenten må ha en eksplisitt "score ikke tilgjengelig"-tilstand.
 
@@ -299,7 +299,7 @@ export interface CacheStore {
 - Query normaliseres før nøkkelbygging: `normalizeQuery(q) = q.trim().toLowerCase().replace(/\s+/g, ' ')`.
 - `buildSearchCacheKey(providerId, normalizedQuery)` → `watchlist:v1:cache:search:${providerId}:${normalizedQuery}`
 - `buildDetailsCacheKey(providerId, id)` → `watchlist:v1:cache:details:${providerId}:${id}`
-- `v1`-versjonsprefiks samles i `utils/storageKeys.ts`. **Policyen er ulik for de to navnerommene:** cache-navnerommet (`watchlist:v1:cache:`) kan bumpes fritt ved datamodell-endring — innholdet er bare cache og kan alltid hentes på nytt. Data-navnerommet (`watchlist:v1:data:`) inneholder brukerdata; å bumpe den versjonen betyr å slette watchlisten og gjøres kun som en bevisst éngangsbeslutning (planlagt ved byttet til ekte API i fase 10, se [dev-tasks.md](./dev-tasks.md)) — aldri som rutinemessig invalidering.
+- `v1`-versjonsprefiks samles i `utils/storageKeys.ts`. **Policyen er ulik for de to navnerommene:** cache-navnerommet (`watchlist:v1:cache:`) kan bumpes fritt ved datamodell-endring — innholdet er bare cache og kan alltid hentes på nytt. Data-navnerommet (`watchlist:v1:data:`) inneholder brukerdata; å bumpe den versjonen betyr å slette watchlisten og gjøres kun som en bevisst éngangsbeslutning (gjort ved byttet til ekte API — se «Watchlisten nullstilles ved API-byttet» nedenfor) — aldri som rutinemessig invalidering.
 
 **TTL:**
 - Søkeresultatlister: 48 timer.

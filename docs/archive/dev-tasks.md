@@ -1,6 +1,8 @@
-# Utviklingsoppgaver
+# Utviklingsoppgaver (arkivert)
 
-Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i [architecture.md](./architecture.md), typene i [data-model.md](./data-model.md) og UX-en i [design.md](./design.md). Fase 1–9 gir en fullt fungerende, testbar app med mock-data — det er selve poenget med `MediaProvider`-abstraksjonen at ingen API-valg trengs før fase 10.
+> **Arkivert 2026-07-18.** Alle 11 faser er ferdige. Videre oppgavesporing skjer via GitHub-prosjektet [«Watchlist»](https://github.com/users/jonasols1g/projects/2), ikke i denne filen — den beholdes kun som et historisk referansedokument for hvordan appen ble bygget opp fase for fase.
+
+Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i [architecture.md](../architecture.md), typene i [data-model.md](../data-model.md) og UX-en i [design.md](../design.md). Fase 1–9 gir en fullt fungerende, testbar app med mock-data — det er selve poenget med `MediaProvider`-abstraksjonen at ingen API-valg trengs før fase 10.
 
 **Bruk av lista:** Hak av (`- [x]`) etter hvert som oppgaver fullføres. Hver fase avsluttes med en «Definition of done» som er sin egen boks — den hakes av først når alle oppgavene i fasen er gjort *og* kriteriet er verifisert. Linjer uten boks er beslutninger eller fakta, ikke arbeid som skal utføres.
 
@@ -23,14 +25,14 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 ## Fase 1 — Prosjektoppsett
 - [x] Pin Node (nyeste LTS) i `.nvmrc` og `"engines"` i `package.json`; npm brukes som pakkebehandler.
 - [x] Sett opp Vite + React + TypeScript. `tsconfig`: `strict: true` og `noUncheckedIndexedAccess: true` fra dag én (smertefullt å skru på senere).
-- [x] Sett `base: '/watchlist/'` i `vite.config.ts` — appen deployes til GitHub Pages under understi (se deploy-avsnittet i [architecture.md](./architecture.md#deploy-github-pages)).
+- [x] Sett `base: '/watchlist/'` i `vite.config.ts` — appen deployes til GitHub Pages under understi (se deploy-avsnittet i [architecture.md](../architecture.md#deploy-github-pages)).
 - [x] Installer og konfigurer Tailwind CSS **v4** via `@tailwindcss/vite`-plugin (ikke v3-oppsettet med `tailwind.config.js`/`postcss.config.js`).
 - [x] Sett opp ESLint (`typescript-eslint` recommended-type-checked + `eslint-plugin-react-hooks`) og Prettier med standardinnstillinger. Konvensjon: named exports, ikke default exports.
 - [x] Installer Vitest + React Testing Library (inkl. jsdom-miljø, `setupTests.ts`).
-- [x] Installer og konfigurer **Playwright** (`playwright.config.ts`, `webServer` som starter Vite-preview mot bygget app). E2E-spec-er ligger i `e2e/` — se [Teststrategi](./architecture.md#teststrategi).
+- [x] Installer og konfigurer **Playwright** (`playwright.config.ts`, `webServer` som starter Vite-preview mot bygget app). E2E-spec-er ligger i `e2e/` — se [Teststrategi](../architecture.md#teststrategi).
 - [x] **Ekskluder `e2e/` fra Vitest** (`test.exclude` i `vite.config.ts`). Begge rammeverk plukker opp `*.spec.ts` som standard; uten dette forsøker Vitest å kjøre Playwright-spec-ene og feiler kryptisk.
 - [x] Installer React Router.
-- [x] Opprett mappestrukturen fra [architecture.md](./architecture.md).
+- [x] Opprett mappestrukturen fra [architecture.md](../architecture.md).
 - [x] Sett opp GitHub Actions-workflow (`.github/workflows/ci.yml`): lint + enhetstester + `npm audit` (brekk på høy/kritisk) på hver push; egen E2E-jobb (`npx playwright install --with-deps` + `npx playwright test`) som laster opp rapporten som artifact ved feil; build-steg som kopierer `dist/index.html` → `dist/404.html` (SPA-fallback for Pages). Selve Pages-publiseringen aktiveres i fase 9.
 - [x] **Definition of done:** `npm run dev` starter en tom app, `npm test` og `npm run test:e2e` kjører (selv uten tester ennå), lint kjører uten feil, CI er grønn på push.
 
@@ -43,7 +45,7 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 
 ## Fase 3 — Cache-lag
 - [x] Opprett `services/cache/CacheStore.ts`, `LocalStorageCacheStore.ts`, `cacheKeys.ts`, `utils/normalizeQuery.ts`, `utils/storageKeys.ts`.
-- [x] `LocalStorageCacheStore` feature-detecter `localStorage` og faller tilbake til in-memory-lagring; leste entries valideres med type guards (feil form = cache-miss, fjernes stille). Se «Robusthet og sikkerhet» i [architecture.md](./architecture.md#robusthet-og-sikkerhet).
+- [x] `LocalStorageCacheStore` feature-detecter `localStorage` og faller tilbake til in-memory-lagring; leste entries valideres med type guards (feil form = cache-miss, fjernes stille). Se «Robusthet og sikkerhet» i [architecture.md](../architecture.md#robusthet-og-sikkerhet).
 - [x] Opprett `services/media/CachingMediaProvider.ts`.
 - [x] **Definition of done:** Enhetstester dekker: set/get-roundtrip, TTL-utløp, quota-exceeded-eviction (eldste/utløpte først), at cache-navnerom er adskilt fra watchlist-navnerom, at korrupt/feilformet entry behandles som miss, in-memory-fallback når `localStorage` er utilgjengelig, og at `CachingMediaProvider` hopper over indre kall ved cache-hit.
 
@@ -55,7 +57,7 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 ## Fase 5 — Søkeside
 - [x] Implementer `SearchBar`, `useMediaSearch`, `SearchResultsGrid`, `SearchResultCard`.
 - [x] Søk trigges kun ved submit (Enter/søkeknapp) — ikke mens man skriver. Nytt submit avbryter pågående kall via `AbortSignal` (også ved unmount), slik at utdaterte responser aldri vises.
-- [x] Håndter lasting/tom-tilstand/feil-tilstand som beskrevet i [design.md](./design.md), inkl. feilkode-tekstene i [design.md](./design.md#feilmeldinger).
+- [x] Håndter lasting/tom-tilstand/feil-tilstand som beskrevet i [design.md](../design.md), inkl. feilkode-tekstene i [design.md](../design.md#feilmeldinger).
 - [x] **E2E** (`e2e/search.spec.ts`): søk → resultater vises → klikk på kort navigerer til detaljside. Dekk også tom-tilstand (søk uten treff).
 - [x] **Definition of done:** Søk mot `MockMediaProvider` viser resultater, klikk navigerer til detaljside.
 
@@ -65,13 +67,13 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 
 ## Fase 7 — Watchlist-funksjonalitet
 - [x] Implementer `context/WatchlistContext.tsx` (reducer: `ADD`/`REMOVE`/`SET_STATUS`) og `services/storage/watchlistStorage.ts`.
-- [x] `watchlistStorage`: type guard-validering ved lesing, in-memory-fallback når `localStorage` er utilgjengelig, og skrivefeil-policyen fra [architecture.md](./architecture.md#cache-design) — rydd cache for å frigjøre plass, ellers synlig feilmelding; aldri stille tap av brukerdata.
+- [x] `watchlistStorage`: type guard-validering ved lesing, in-memory-fallback når `localStorage` er utilgjengelig, og skrivefeil-policyen fra [architecture.md](../architecture.md#cache-design) — rydd cache for å frigjøre plass, ellers synlig feilmelding; aldri stille tap av brukerdata.
 - [x] Implementer `WatchlistToggleButton` (på både søkeresultat-kort og detaljside), `WatchlistPage` med `WatchlistTabs` (Planlagt/Sett), `WatchlistItemCard`.
 - [x] **E2E** (`e2e/watchlist.spec.ts`): legg til fra søkeresultat → tittelen vises under «Planlagt» → bytt status til «Sett» → `page.reload()` → status er beholdt. Persistens over reload er nettopp det enhetstester ikke fanger, og hovedgrunnen til at E2E er verdt det her.
 - [x] **Definition of done:** Legge til, bytte status og fjerne fra watchlist fungerer og overlever en sideoppdatering (persistert i `localStorage`).
 
 ## Fase 8 — Talesøk
-- [x] Implementer `hooks/useSpeechRecognition.ts` med feature-detection (`window.SpeechRecognition ?? window.webkitSpeechRecognition`) og `lang: 'en-US'` (se [design.md](./design.md#søkeflyt-tekst-og-tale)).
+- [x] Implementer `hooks/useSpeechRecognition.ts` med feature-detection (`window.SpeechRecognition ?? window.webkitSpeechRecognition`) og `lang: 'en-US'` (se [design.md](../design.md#søkeflyt-tekst-og-tale)).
 - [x] Implementer `VoiceSearchButton`, koble `transcript` (kun `isFinal`-resultat) inn i samme `handleSearch(query)`-flyt som tekstsøk på `HomePage`.
 - [x] **Definition of done:** Talesøk fungerer i Chrome/Edge; i nettlesere uten støtte vises tydelig fallback og tekstsøk er upåvirket. Enhetstester mocker `window.SpeechRecognition` og dekker både støttet og ikke-støttet nettleser.
 
@@ -81,7 +83,7 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 - [x] Tilgjengelighet: `aria-label`er (spesielt mikrofonknapp), synlig fokus-styling, tastaturnavigasjon.
 - [x] Responsivt design på tvers av alle sider.
 - [x] Konsekvente tomme/lastings/feil-tilstander overalt (gjenbruk `components/common/`).
-- [x] Legg til Content-Security-Policy som `<meta http-equiv>`-tag i `index.html` (GitHub Pages støtter ikke egendefinerte headere, se [architecture.md](./architecture.md#robusthet-og-sikkerhet)).
+- [x] Legg til Content-Security-Policy som `<meta http-equiv>`-tag i `index.html` (GitHub Pages støtter ikke egendefinerte headere, se [architecture.md](../architecture.md#robusthet-og-sikkerhet)).
 - [x] ~~Aktiver GitHub Pages-publisering fra CI-workflowen~~ — utsatt til, og gjennomført i, fase 10 (PR #12, 2026-07-18): repoet ble gjort offentlig, og `deploy`-jobben (build → `configure-pages` → `upload-pages-artifact` → `deploy-pages`) er nå i `.github/workflows/ci.yml`, gatet på push til `main` etter grønn test+E2E.
 - [x] **E2E** (`e2e/deep-links.spec.ts`): last `/watchlist/title/<id>` direkte og refresh på hver rute — verifiserer 404.html-fallbacken og `basename`-oppsettet. Dette er den mest verdifulle E2E-testen i prosjektet: SPA-fallback på GitHub Pages er nettopp den typen feil som kun oppstår i produksjonsbygget og aldri i `npm run dev`.
 - [x] **E2E:** kjør hele suiten mot produksjonsbygget (`vite preview` med `base: '/watchlist/'`), ikke bare mot dev-serveren. (På plass siden fase 1s `playwright.config.ts`.)
@@ -91,30 +93,30 @@ Faseinndelt rekkefølge for implementasjonen. Hver fase bygger på strukturen i 
 
 ## Fase 10 — Ekte API-integrasjon (egen, senere milepæl)
 
-Denne fasen er bevisst uavhengig av fase 1–9. Datakildene er valgt: **OMDb** for søk og titteldata (inkl. IMDb- og RT-score), **Movie of the Night** (MOTN) for strømmetilgjengelighet. Se [Datakilder](./architecture.md#datakilder) for arbeidsdelingen og hvorfor IMDb-ID-en binder dem sammen.
+Denne fasen er bevisst uavhengig av fase 1–9. Datakildene er valgt: **OMDb** for søk og titteldata (inkl. IMDb- og RT-score), **Movie of the Night** (MOTN) for strømmetilgjengelighet. Se [Datakilder](../architecture.md#datakilder) for arbeidsdelingen og hvorfor IMDb-ID-en binder dem sammen.
 
 Forutsetninger som var åpne, og nå er avklart (fakta, ingen oppgaver):
 - **CORS:** verifisert 2026-07-16 — begge API-er svarer med `access-control-allow-origin: *` over https. Ingen proxy trengs, "ingen backend"-kravet holder.
 - **Region:** `country=no` — påkrevd parameter hos MOTN, settes i provider-konfigurasjonen.
-- **Attribusjon:** MOTNs vilkår krever synlig kreditering — `Footer` (se [design.md](./design.md#attribusjon)).
+- **Attribusjon:** MOTNs vilkår krever synlig kreditering — `Footer` (se [design.md](../design.md#attribusjon)).
 
 ### Oppgaver
 
-- [x] Skaff nøkler: OMDb (<https://www.omdbapi.com/apikey.aspx>) og MOTN Developers Platform (gratisplan, ingen betalingsinfo). Lagt i `.env.local` (git-ignorert) og som GitHub Actions-secrets; `.env.example` dokumenterer `VITE_OMDB_API_KEY` og `VITE_MOTN_API_KEY` (opprettet i PR #12). Vite krever `VITE_`-prefiks for at variabelen skal nå klientbundelen — og det betyr samtidig at nøklene er lesbare for sluttbruker (akseptert, se [risikoer](./architecture.md#kjente-forutsetninger-og-risikoer)).
-- [x] Implementer `OmdbMediaProvider` (`search` via `?s=`, `getDetails` via `?i=tt…`). Mapping håndterer fallgruvene i [OMDb-mapping](./architecture.md#omdb-mapping--kjente-fallgruver): `Response: "False"` ved HTTP 200, `"N/A"`-strenger → `null`, RT-score fra `Ratings`-arrayet, alle tallfelter som strenger.
+- [x] Skaff nøkler: OMDb (<https://www.omdbapi.com/apikey.aspx>) og MOTN Developers Platform (gratisplan, ingen betalingsinfo). Lagt i `.env.local` (git-ignorert) og som GitHub Actions-secrets; `.env.example` dokumenterer `VITE_OMDB_API_KEY` og `VITE_MOTN_API_KEY` (opprettet i PR #12). Vite krever `VITE_`-prefiks for at variabelen skal nå klientbundelen — og det betyr samtidig at nøklene er lesbare for sluttbruker (akseptert, se [risikoer](../architecture.md#kjente-forutsetninger-og-risikoer)).
+- [x] Implementer `OmdbMediaProvider` (`search` via `?s=`, `getDetails` via `?i=tt…`). Mapping håndterer fallgruvene i [OMDb-mapping](../architecture.md#omdb-mapping--kjente-fallgruver): `Response: "False"` ved HTTP 200, `"N/A"`-strenger → `null`, RT-score fra `Ratings`-arrayet, alle tallfelter som strenger.
 - [x] Implementer `MotnMediaProvider.getStreaming(imdbId)` mot `GET /shows/{id}?country=no` med `X-API-Key`-header. Mapper MOTNs `streamingOptions` → `StreamingAvailability`. Ikke-funnet returnerer `null`, kaster ikke.
 - [x] Implementer `CompositeMediaProvider`: `search` går kun til OMDb; `getDetails` kaller begge i parallell med `Promise.all`, der MOTN-feil degraderes til `streaming: null`.
-- [x] Valider URL-er fra begge API-er i mappingen (kun `https:`, se [Robusthet og sikkerhet](./architecture.md#robusthet-og-sikkerhet)).
+- [x] Valider URL-er fra begge API-er i mappingen (kun `https:`, se [Robusthet og sikkerhet](../architecture.md#robusthet-og-sikkerhet)).
 - [x] Map feilresponser til `MediaProviderError`: 401/403 → `unknown` (feilkonfigurert nøkkel, logges tydelig), 429 → `rate-limit`, nettverksfeil → `network`, uventet responsform → `invalid-response`.
-- [x] Utvid CSP-meta-taggen med domenene i [Robusthet og sikkerhet](./architecture.md#robusthet-og-sikkerhet) — inkl. `m.media-amazon.com` for OMDbs plakater.
-- [x] Legg til `Footer` med attribusjon (se [design.md](./design.md#attribusjon)).
+- [x] Utvid CSP-meta-taggen med domenene i [Robusthet og sikkerhet](../architecture.md#robusthet-og-sikkerhet) — inkl. `m.media-amazon.com` for OMDbs plakater.
+- [x] Legg til `Footer` med attribusjon (se [design.md](../design.md#attribusjon)).
 - [x] Bytt `services/media/index.ts` fra `MockMediaProvider` til `CompositeMediaProvider`.
-- [x] Bump data-versjonen til `watchlist:v2:data:` — eksisterende watchlist fra mock-fasen slettes bevisst, ingen migrasjonslogikk (se [architecture.md](./architecture.md#kjente-forutsetninger-og-risikoer)).
+- [x] Bump data-versjonen til `watchlist:v2:data:` — eksisterende watchlist fra mock-fasen slettes bevisst, ingen migrasjonslogikk (se [architecture.md](../architecture.md#kjente-forutsetninger-og-risikoer)).
 - [x] Aktiver GitHub Pages-publisering fra CI-workflowen (bygg + `actions/deploy-pages`; `base`/`basename`/404-fallback på plass siden fase 1, CSP injiseres kun ved build siden PR #9). Bruker gjorde repoet offentlig 2026-07-18; Settings → Pages → Source satt til «GitHub Actions» samme dag. Live på `https://jonasols1g.github.io/watchlist/`.
 
 ### Testing
 
-Ingen tester — verken enhets- eller E2E — treffer ekte API-er. Kvoten er 100/døgn hos MOTN, og en CI-kjøring per push ville tømt den; dessuten kan feiltilstander som 429 ikke fremprovoseres mot ekte API. Enhetstestene mocker `fetch`, E2E-testene stubber nettverket med `page.route` (se [Teststrategi](./architecture.md#teststrategi)).
+Ingen tester — verken enhets- eller E2E — treffer ekte API-er. Kvoten er 100/døgn hos MOTN, og en CI-kjøring per push ville tømt den; dessuten kan feiltilstander som 429 ikke fremprovoseres mot ekte API. Enhetstestene mocker `fetch`, E2E-testene stubber nettverket med `page.route` (se [Teststrategi](../architecture.md#teststrategi)).
 
 Enhetstester av provider-mappingen:
 - [x] OMDbs `Response: "False"`-bom (HTTP 200) → `MediaProviderError('not-found')`.
@@ -133,7 +135,7 @@ E2E med stubbede API-responser:
 
 ## Fase 11 — Visuelt redesign (CineFind-tema)
 
-Uavhengig av fase 10 (rekkefølgen mellom dem spiller ingen rolle — denne fasen restyler fase 5–9s sider og trenger ikke ekte API-data). Design-referanse: [docs/design-spec/README.md](./design-spec/README.md) og skjermbildene i `docs/design-spec/screenshots/` — en hifi HTML-prototype som skal **gjenskapes** i eksisterende React/Tailwind-stack, ikke kopieres direkte. Se [design.md](./design.md#visuelt-tema-cinefind-fase-11) for hvordan beslutningene går inn i eksisterende struktur.
+Uavhengig av fase 10 (rekkefølgen mellom dem spiller ingen rolle — denne fasen restyler fase 5–9s sider og trenger ikke ekte API-data). Design-referanse: [docs/design-spec/README.md](../design-spec/README.md) og skjermbildene i `docs/design-spec/screenshots/` — en hifi HTML-prototype som skal **gjenskapes** i eksisterende React/Tailwind-stack, ikke kopieres direkte. Se [design.md](../design.md#visuelt-tema-cinefind-fase-11) for hvordan beslutningene går inn i eksisterende struktur.
 
 - [x] Legg til Google Fonts (Space Grotesk 600/700, Manrope 400–800) i `index.html`, og utvid CSP-en (`style-src`/`font-src` for `fonts.googleapis.com`/`fonts.gstatic.com`) i `vite.config.ts`s csp-meta-tag-plugin.
 - [x] Definer design-tokens (bakgrunnsgradient, primærgradient, gull, de fem per-tittel-huene, overflate-/tekstfarger) som Tailwind v4 `@theme`-variabler i `src/index.css`, iht. de eksakte `oklch()`-verdiene i design-spec.
@@ -143,7 +145,7 @@ Uavhengig av fase 10 (rekkefølgen mellom dem spiller ingen rolle — denne fase
 - [x] Restyle `SearchResultsGrid`/`SearchResultCard`: 2-kolonners grid, plakat med hue-tonet ring, stjerne-toggle-badge (fylt/tom etter watchlist-status), meta-tekst i tittelens hue.
 - [x] Restyle `TitleDetailPage`: full-bleed hero m/bunn-scrim, tilbake-knapp, rating-badges (IMDb gull, Rotten Tomatoes rødtonet), strømme-badges per tjeneste, fast gradient-CTA nederst.
 - [x] Restyle `WatchlistPage`/`WatchlistItemCard`: radvisning med plakat-thumb, hue-ring, hue-tonet meta, sirkulær stjerne-fjern-knapp.
-- [x] Bevar all eksisterende funksjonalitet, tilstander (lasting/tom/feil) og a11y (`aria-label`er, fokus-styling) fra fase 5–9 uendret — dette er en ren restyling, ingen atferdsendring. Design-spec-en dekker ikke disse tilstandene eksplisitt; de skal likevel bruke samme tema-tokens for et konsekvent uttrykk (jf. [design.md](./design.md#styling)).
+- [x] Bevar all eksisterende funksjonalitet, tilstander (lasting/tom/feil) og a11y (`aria-label`er, fokus-styling) fra fase 5–9 uendret — dette er en ren restyling, ingen atferdsendring. Design-spec-en dekker ikke disse tilstandene eksplisitt; de skal likevel bruke samme tema-tokens for et konsekvent uttrykk (jf. [design.md](../design.md#styling)).
 - [x] Oppdater eventuelle komponenttester som matcher på gamle Tailwind-klassenavn.
 - [x] **E2E:** kjør eksisterende `e2e/search.spec.ts`, `e2e/watchlist.spec.ts` og `e2e/deep-links.spec.ts` uendret mot den nye stylingen — de tester atferd, ikke utseende, og skal fortsatt være grønne.
 - [x] **Definition of done:** Alle fire skjermbilder i `docs/design-spec/screenshots/` er gjenskapt pixel-nært (designet er hifi) i produksjonsbygget, eksisterende E2E-suite er grønn, og verken `MediaProvider`-kontrakten eller datamodellen er endret.
@@ -154,4 +156,4 @@ Uavhengig av fase 10 (rekkefølgen mellom dem spiller ingen rolle — denne fase
 - `WatchlistStarToggle` på søkeresultat-kort legger kun til/fjerner (bytter ikke planlagt/sett) — synlig statustekst beholdt for å bevare `e2e/watchlist.spec.ts`. Statusbytte skjer fortsatt via `WatchlistToggleButton`/`WatchlistItemCard`.
 - `WatchlistItemCard` beholder en sekundær «Merk som sett/planlagt»-lenke ved siden av stjernen (skjermbildet viser kun stjerne), for å bevare eksisterende fase 7-funksjonalitet.
 - Detaljside-heroen gjenbruker `posterUrl` (intet nytt backdrop-felt i `data-model.md`).
-- Full-bleed hero bryter kun ut av `<main>`s egen padding, ikke hele viewport på bred desktop (appen skal forbli responsiv, jf. [design.md](./design.md#styling); design-spec-en er en 390px mobil-mockup).
+- Full-bleed hero bryter kun ut av `<main>`s egen padding, ikke hele viewport på bred desktop (appen skal forbli responsiv, jf. [design.md](../design.md#styling); design-spec-en er en 390px mobil-mockup).
