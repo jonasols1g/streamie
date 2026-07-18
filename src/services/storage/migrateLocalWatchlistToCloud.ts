@@ -40,9 +40,9 @@ export interface WatchlistMigrationOutcome {
  *    *engangs*-sjekk (ikke en som gjentas på hvert påfølgende app-load for
  *    enhver bruker som aldri hadde noen lokal watchlist å migrere i første
  *    omgang — som i praksis er de aller fleste brukere av denne funksjonen).
- * 3. Ellers skrives (`upsert`, merge) alle lokale elementer til
- *    `users/{uid}/watchlistItems/{mediaId}` — lokal versjon vinner ved
- *    konflikt (`upsert` overskriver hele dokumentet).
+ * 3. Ellers skrives (`upsert`, som overskriver hele dokumentet) alle lokale
+ *    elementer til `users/{uid}/watchlistItems/{mediaId}` — lokal versjon
+ *    vinner ved konflikt.
  * 4. Lykkes alle skrivingene, settes migreringsflagget.
  * 5. Feiler ett eller flere av opplastingsforsøkene (f.eks. offline):
  *    flagget settes **ikke** — et senere app-load prøver på nytt. Lokale
