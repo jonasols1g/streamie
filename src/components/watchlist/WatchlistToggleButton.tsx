@@ -58,28 +58,30 @@ export function WatchlistToggleButton({
     status === "planned" ? "watched" : "planned";
 
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${className ?? ""}`}>
+    <div className={`flex flex-col gap-2 ${className ?? ""}`}>
       <span className="text-text-muted text-sm">
         I watchlisten – {WATCHLIST_STATUS_LABEL[status]}
       </span>
-      <button
-        type="button"
-        onClick={() => {
-          setStatus(media.id, otherStatus);
-        }}
-        className={buttonClassName}
-      >
-        Merk som {WATCHLIST_STATUS_LABEL[otherStatus].toLowerCase()}
-      </button>
-      <button
-        type="button"
-        onClick={() => {
-          removeFromWatchlist(media.id);
-        }}
-        className={buttonClassName}
-      >
-        Fjern fra watchlist
-      </button>
+      <div className="flex flex-nowrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setStatus(media.id, otherStatus);
+          }}
+          className={buttonClassName}
+        >
+          Merk som {WATCHLIST_STATUS_LABEL[otherStatus].toLowerCase()}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            removeFromWatchlist(media.id);
+          }}
+          className={buttonClassName}
+        >
+          Fjern fra watchlist
+        </button>
+      </div>
     </div>
   );
 }
