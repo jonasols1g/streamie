@@ -1,6 +1,6 @@
 # Slack-varsling for agent-arbeidsflyten
 
-> **Status:** planlagt 2026-07-18, ikke påbegynt. Slack-webhooken er opprettet og `SLACK_WEBHOOK_URL` er satt i `.claude/settings.local.json` (2026-07-19) — resten av planen (script, agent-filer, `CLAUDE.md`) gjenstår. Dette er en plan for utviklings-tooling, ikke en beskrivelse av gjeldende arkitektur — se `CLAUDE.md` for gjeldende agent-arbeidsflyt. Når arbeidet startes, spores det som et GitHub-issue jf. `CLAUDE.md`, med denne filen som utgangspunkt.
+> **Status:** kode implementert 2026-07-19 (issue #34) — `scripts/notify-slack.mjs`, agent-filene og `CLAUDE.md` er oppdatert som beskrevet under. Isolert scripttest (Verifisering punkt 1) og full trial på et trivielt issue (Verifisering punkt 2) gjenstår, siden `SLACK_WEBHOOK_URL` kun finnes i hovedsamtalens (ikke-worktree-isolerte) `.claude/settings.local.json`. Statuslinjen oppdateres til "fullført" når begge er verifisert. Dette er en plan for utviklings-tooling, ikke en beskrivelse av gjeldende arkitektur — se `CLAUDE.md` for gjeldende agent-arbeidsflyt.
 
 ## Kontekst
 
