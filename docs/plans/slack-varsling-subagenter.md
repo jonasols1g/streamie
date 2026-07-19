@@ -1,6 +1,6 @@
 # Slack-varsling for agent-arbeidsflyten
 
-> **Status:** kode implementert og merget 2026-07-19 (issue #34 → PR #35) — `scripts/notify-slack.mjs`, agent-filene, `CLAUDE.md` og `permissions.allow`-regelen i `.claude/settings.local.json` er alle på plass. Isolert scripttest (Verifisering punkt 1) er kjørt mot ekte webhook for alle fem avsendere, ingen feil. Kun full trial på et trivielt issue (Verifisering punkt 2 — varslingene faktisk trigget gjennom en hel `CLAUDE.md`-flyt) gjenstår, siden agent-filene ble redigert i samme runde som varslingskodene ble skrevet. Statuslinjen oppdateres til "fullført" når det er gjort. Dette er en plan for utviklings-tooling, ikke en beskrivelse av gjeldende arkitektur — se `CLAUDE.md` for gjeldende agent-arbeidsflyt.
+> **Status:** fullført 2026-07-19. Implementert og merget via issue #34 → PR #35 (`scripts/notify-slack.mjs`, agent-filene, `CLAUDE.md`, `permissions.allow`-regelen i `.claude/settings.local.json`). Begge verifiseringspunktene er kjørt: isolert scripttest mot ekte webhook for alle fem avsendere (punkt 1), og en full trial-runde på et nytt, trivielt issue (#36 → PR #37, hele `CLAUDE.md`-flyten issue → dev → reviewer → verifier → merge, med varsling trigget fra agent-filenes egne instrukser — punkt 2). Dette er en plan for utviklings-tooling, ikke en beskrivelse av gjeldende arkitektur — se `CLAUDE.md` for gjeldende agent-arbeidsflyt.
 
 ## Kontekst
 
