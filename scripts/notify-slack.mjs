@@ -38,11 +38,13 @@ if (!webhookUrl) {
   skip('SLACK_WEBHOOK_URL er ikke satt (se .claude/settings.local.json)');
 }
 
+const text = `${sender.icon_emoji} *${sender.username}:* ${message}`;
+
 try {
   const res = await fetch(webhookUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: sender.username, icon_emoji: sender.icon_emoji, text: message }),
+    body: JSON.stringify({ text }),
   });
   if (!res.ok) skip(`Slack svarte ${res.status} ${res.statusText}`);
 } catch (err) {
