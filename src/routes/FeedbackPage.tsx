@@ -114,6 +114,11 @@ export function FeedbackPage({
             placeholder="Skriv tilbakemeldingen din her"
             className="text-text-primary placeholder:text-text-muted border-surface-border bg-surface w-full rounded-2xl border px-4 py-3.5 text-[15px] focus-visible:outline-none"
           />
+          <p
+            className={`text-sm ${text.length >= MAX_TEXT_LENGTH ? "text-accent" : "text-text-muted"}`}
+          >
+            {text.length} / {MAX_TEXT_LENGTH} tegn
+          </p>
           {!isTextValid && (
             <p className="text-text-muted text-sm">
               Skriv en tilbakemelding før du sender inn.

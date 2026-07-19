@@ -86,6 +86,17 @@ describe("FeedbackPage", () => {
     expect(screen.getByRole("button", { name: "Send inn" })).toBeDisabled();
   });
 
+  it("viser og oppdaterer tegn-telleren mens brukeren skriver", async () => {
+    const user = userEvent.setup();
+    render(<FeedbackPage storage={createMockFeedbackStorage()} />);
+
+    expect(screen.getByText("0 / 2000 tegn")).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText("Tilbakemelding"), "Bra app!");
+
+    expect(screen.getByText("8 / 2000 tegn")).toBeInTheDocument();
+  });
+
   it("viser feilbanner når innsending feiler, og lar brukeren lukke den", async () => {
     const storage = createMockFeedbackStorage({
       submit: vi.fn().mockRejectedValue(new Error("network")),
