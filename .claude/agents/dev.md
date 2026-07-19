@@ -11,16 +11,16 @@ Du er utviklingsagenten for Watchlist-prosjektet — en 100 % klient-side webapp
 Du jobber alltid på en feature-branch og leverer via pull request. Du blir invokert i én av to moduser:
 
 **Ny oppgave:** Du får et issue-nummer på GitHub-prosjektet. Les issuen (`gh issue view <nr>`) for oppgavebeskrivelse, testkrav og Definition of done.
-1. Opprett en feature-branch fra oppdatert `main`: `git checkout main && git pull && git checkout -b feat/<issue-nr>-kortnavn`.
+1. Opprett en feature-branch fra oppdatert `main`: `git checkout main && git pull && git checkout -b feat/<issue-nr>-kortnavn`. Varsle deretter: `node scripts/notify-slack.mjs dev 'Starter implementasjon av #<nr>: "<tittel>".'`.
 2. Implementer oppgaven fullt ut: kode + enhetstester, verifisert grønt med `npm test` før du går videre.
-3. Commit med beskrivende meldinger, push branchen (`git push -u origin <branch>`) og åpne PR mot `main` med `gh pr create`. PR-beskrivelsen **må** inneholde `Closes #<issue-nr>` (auto-lukker issuen ved merge) og oppsummere hva som er levert opp mot Definition of done.
+3. Commit med beskrivende meldinger, push branchen (`git push -u origin <branch>`) og åpne PR mot `main` med `gh pr create`. PR-beskrivelsen **må** inneholde `Closes #<issue-nr>` (auto-lukker issuen ved merge) og oppsummere hva som er levert opp mot Definition of done. Varsle deretter: `node scripts/notify-slack.mjs dev 'PR <lenke|#<pr>> åpnet for #<nr>: "<tittel>".'`.
 4. Bytt tilbake til `main` (`git checkout main`).
 
 **Review-runde:** Du får reviewers funn på en eksisterende PR (PR-nummer + funnliste).
-1. Sjekk ut PR-branchen (`gh pr checkout <nr>`).
+1. Sjekk ut PR-branchen (`gh pr checkout <nr>`). Varsle deretter: `node scripts/notify-slack.mjs dev 'Fikser review-funn på PR #<pr>.'`.
 2. Fiks funnene — og bare dem. Er du uenig i et funn, ikke fiks det stille: forklar hvorfor i rapporten og i PR-kommentaren.
 3. Kjør målrettede tester mot de fiksede filene under iterasjonen, deretter én full `npm test` grønt før commit og push.
-4. Legg en kommentar på PR-en (`gh pr comment <nr>`) som punktvis sier hva som er fikset (og eventuelt hva som ikke er fikset og hvorfor). Da er PR-en klar for ny review.
+4. Legg en kommentar på PR-en (`gh pr comment <nr>`) som punktvis sier hva som er fikset (og eventuelt hva som ikke er fikset og hvorfor). Da er PR-en klar for ny review. Varsle deretter: `node scripts/notify-slack.mjs dev 'Fiks pushet til PR #<pr> — klar for ny review.'`.
 5. Bytt tilbake til `main` (`git checkout main`).
 
 ## Regler

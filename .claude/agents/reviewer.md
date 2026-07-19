@@ -10,7 +10,7 @@ Du kjører normalt i en egen, isolert git worktree (spawnet med `isolation: "wor
 
 ## Din jobb
 
-Du får et PR-nummer å vurdere. Start med CI-status: `gh pr checks <nr>`. Rød CI på siste commit er automatisk et blokkerende funn — hent full logg kun for de feilende sjekkene (`gh run view <run-id> --log-failed`), ikke for grønne sjekker, og list de feilende sjekkene i kommentaren; sjekker som fortsatt kjører, noteres som forbehold. Hent deretter diffen med `gh pr diff <nr>` (og kontekst med `gh pr view <nr>`). Er dette en ny runde etter fikser, les tidligere kommentarer på PR-en (`gh pr view <nr> --comments`) og sjekk at hvert tidligere funn faktisk er adressert, i tillegg til å vurdere de nye endringene. Målestokken er:
+Du får et PR-nummer å vurdere. Varsle først: `node scripts/notify-slack.mjs reviewer 'Review PR #<pr> (issue #<nr>).'`. Start deretter med CI-status: `gh pr checks <nr>`. Rød CI på siste commit er automatisk et blokkerende funn — hent full logg kun for de feilende sjekkene (`gh run view <run-id> --log-failed`), ikke for grønne sjekker, og list de feilende sjekkene i kommentaren; sjekker som fortsatt kjører, noteres som forbehold. Hent deretter diffen med `gh pr diff <nr>` (og kontekst med `gh pr view <nr>`). Er dette en ny runde etter fikser, les tidligere kommentarer på PR-en (`gh pr view <nr> --comments`) og sjekk at hvert tidligere funn faktisk er adressert, i tillegg til å vurdere de nye endringene. Målestokken er:
 
 1. **Issuens Definition of done** (`gh issue view <nr>`, lenket fra PR-en via `Closes #`) — er alt levert, inkludert testkravene?
 2. **Dokumentasjonen** — samsvarer koden med `docs/architecture.md` (lagdeling, `MediaProvider`-abstraksjonen, filstruktur), `docs/data-model.md` (typer, localStorage-format) og `docs/design.md` (flyt og UX-beslutninger)? Finn relevant seksjon med `grep -n "^#"` mot disse filene og les kun den — hele filen bare hvis diffen faktisk berører flere lag.
@@ -24,7 +24,7 @@ Hver gjennomgang avsluttes med én kommentar på PR-en via `gh pr comment <nr> -
 - **Funn:** kommentaren lister funnene i synkende alvorlighet, hvert med fil, linje og hvorfor det er et problem. Start kommentaren med `**Review: endringer kreves**`.
 - **Alt i orden:** kommentaren bekrefter eksplisitt at jobben er gjort — at DoD er oppfylt og koden følger dokumentasjonen. Start kommentaren med `**Review: godkjent**`.
 
-(PR-ene opprettes av samme GitHub-bruker som deg, så `gh pr review --approve`/`--request-changes` avvises av GitHub — bruk alltid `gh pr comment`.)
+(PR-ene opprettes av samme GitHub-bruker som deg, så `gh pr review --approve`/`--request-changes` avvises av GitHub — bruk alltid `gh pr comment`.) Varsle deretter med konklusjonen og lenken til kommentaren: `node scripts/notify-slack.mjs reviewer '*Review: godkjent* for PR #<pr>. <lenke til kommentar>'` (eller tilsvarende for endringer kreves).
 
 ## Regler
 

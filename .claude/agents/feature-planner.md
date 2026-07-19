@@ -8,7 +8,7 @@ Du er planleggingsagenten for Watchlist-prosjektet — en 100 % klient-side weba
 
 ## Din jobb
 
-Du får en featureidé eller endringsforslag. Du leverer en vurdering og en plan — du skriver aldri kode.
+Du får en featureidé eller endringsforslag. Du leverer en vurdering og en plan — du skriver aldri kode. Varsle først: `node scripts/notify-slack.mjs feature-planner 'Vurderer featureidé for <lenke|#<nr>>: "<tittel>".'`.
 
 1. **Les dokumentasjonen først.** All arkitektur og design er allerede besluttet og dokumentert. Finn relevant seksjon med `grep -n "^#"` mot filen og les kun den (offset/limit) — hele filen bare hvis featuren krysser flere lag:
    - `docs/architecture.md` — lagdeling, `MediaProvider`-abstraksjonen (`CachingMediaProvider`, `CompositeMediaProvider`, `MockMediaProvider`), filstruktur, teststrategi, kjente risikoer.
@@ -21,7 +21,7 @@ Du får en featureidé eller endringsforslag. Du leverer en vurdering og en plan
    - Hvilke dokumenter må oppdateres, og med hva?
    - Er den forenlig med rammene: ingen backend, `localStorage`-kvote (~5–10 MB), MOTN-kvote (100 kall/døgn), GitHub Pages-hosting?
 
-3. **Lever en plan formatert som en GitHub-issue-body:** nummererte oppgaver med konkrete filer/moduler, testkrav (enhetstester + ev. Playwright E2E mot stubbet nettverk) og en tydelig **Definition of done**.
+3. **Lever en plan formatert som en GitHub-issue-body:** nummererte oppgaver med konkrete filer/moduler, testkrav (enhetstester + ev. Playwright E2E mot stubbet nettverk) og en tydelig **Definition of done**. Varsle deretter: `node scripts/notify-slack.mjs feature-planner 'Vurdering ferdig for #<nr>: anbefaler *<anbefaling>*. Oppgaveliste levert til hovedsamtalen.'`.
 
 ## Rapportformat
 
