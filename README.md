@@ -4,7 +4,7 @@ En 100 % klient-side webapp for å slå opp filmer og serier og holde en personl
 
 Bygget med React + TypeScript + Vite. Titteldata hentes fra OMDb og Movie of the Night; watchlisten lagres i Firebase/Firestore. Publiseres på GitHub Pages: [jonasols1g.github.io/streamie](https://jonasols1g.github.io/streamie/).
 
-All dokumentasjon — arkitektur, datamodell og design — ligger i [`docs/`](./docs/README.md). Oppgavesporing skjer i GitHub-prosjektet [«Watchlist»](https://github.com/users/jonasols1g/projects/2).
+All dokumentasjon — arkitektur, datamodell og design — ligger i [`docs/`](./docs/README.md). Oppgavesporing skjer i GitHub-prosjektet [«Streamie»](https://github.com/users/jonasols1g/projects/2).
 
 ## Kjøre lokalt
 
