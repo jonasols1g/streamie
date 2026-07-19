@@ -1,6 +1,6 @@
 # Slack-varsling for agent-arbeidsflyten
 
-> **Status:** fullført 2026-07-19. Implementert og merget via issue #34 → PR #35 (`scripts/notify-slack.mjs`, agent-filene, `CLAUDE.md`, `permissions.allow`-regelen i `.claude/settings.local.json`). Begge verifiseringspunktene er kjørt: isolert scripttest mot ekte webhook for alle fem avsendere (punkt 1), og en full trial-runde på et nytt, trivielt issue (#36 → PR #37, hele `CLAUDE.md`-flyten issue → dev → reviewer → verifier → merge, med varsling trigget fra agent-filenes egne instrukser — punkt 2). Dette er en plan for utviklings-tooling, ikke en beskrivelse av gjeldende arkitektur — se `CLAUDE.md` for gjeldende agent-arbeidsflyt.
+> **Status:** kode fra issue #34/PR #35 er merget og trial-kjørt (#36/PR #37), men trial-runden avdekket et reelt designfeil: **antakelsen i "Valgt tilnærming" om at `username`/`icon_emoji` kan overstyres per melding, stemmer ikke** for webhooks tilknyttet en Slack-app (se korrigert forklaring under). Alle meldinger ankom i Slack under appens egen faste identitet ("agents-chat-app", standardikon) i stedet for de fem persona-navnene/emojiene. Korrigert løsning (tekstprefiks, se punkt 1) er beskrevet under og spores som eget oppfølgingsissue. Statuslinjen oppdateres til "fullført" når fiksen er verifisert i Slack på nytt. Dette er en plan for utviklings-tooling, ikke en beskrivelse av gjeldende arkitektur — se `CLAUDE.md` for gjeldende agent-arbeidsflyt.
 
 ## Kontekst
 
@@ -10,7 +10,9 @@ Watchlist-prosjektet driver utvikling gjennom et fast agent-orkestrert oppsett (
 
 Nylig commit `b3d76e6` strammet bevisst inn alle fire agent-filene for å redusere token-/verktøybruk per kjøring. Løsningen under er designet for å ikke motvirke det: ett delt Node-script, ett Bash-kall per varslingspunkt, ingen nye avhengigheter, ingen MCP-server, og varsling som aldri kan blokkere arbeidsflyten selv om Slack er nede.
 
-**Valgt tilnærming:** Slack Incoming Webhook (vurdert mot bot-token og MCP-server, begge forkastet som tyngre oppsett og i strid med kost-innstrammingen fra `b3d76e6`) — én webhook-URL, `POST` med JSON `{username, icon_emoji, text}`. Slack lar avsendernavn og ikon overstyres per melding uten noe ekstra app-oppsett, så alle fem avsendere kan dele én webhook.
+**Valgt tilnærming:** Slack Incoming Webhook (vurdert mot bot-token og MCP-server, begge forkastet som tyngre oppsett og i strid med kost-innstrammingen fra `b3d76e6`) — én webhook-URL, `POST` med JSON `{text}`.
+
+**Korrigert 2026-07-19 (funnet under trial-runde på #36/PR #37):** den opprinnelige antakelsen om at `username`/`icon_emoji` i JSON-bodyen overstyrer avsendernavn/ikon, stemmer **kun** for gamle "legacy custom integration"-webhooks (rene `/services/`-URL-er uten tilknyttet app). Webhooks opprettet via en Slack-app — akkurat oppskriften i punkt 5 under — ignorerer disse feltene stille; meldingen arver alltid appens egne, faste navn/ikon satt under *Basic Information* i appinnstillingene. Løsningen er i stedet at scriptet selv setter avsenderidentiteten **inne i** `text`-feltet, som ett prefiks foran meldingen: emoji-kortkode (rendres av Slack som vanlig i meldingstekst) + fet visningsnavn, f.eks. `:mag: *Gransker Guri:* Review PR #37 (issue #36).`. Dette bevarer den visuelle skillingen mellom de fem avsenderne og krever fortsatt ingen ekstra Slack-app-oppsett — bare ikke som eget avatar/navn på selve meldingsboksen, men som tekst i starten av hver linje.
 
 **Detaljnivå bekreftet av brukeren:** full sporing — start/slutt per sub-agent, review-rundemeldinger, og hovedsamtalens egne steg (board-flytting, spawn, merge) — men ett kall per faktisk hendelse, ingen dobbeltvarsling der to steg i `CLAUDE.md` beskriver samme fysiske handling.
 
@@ -59,11 +61,13 @@ if (!webhookUrl) {
   skip('SLACK_WEBHOOK_URL er ikke satt (se .claude/settings.local.json)');
 }
 
+const text = `${sender.icon_emoji} *${sender.username}:* ${message}`;
+
 try {
   const res = await fetch(webhookUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: sender.username, icon_emoji: sender.icon_emoji, text: message }),
+    body: JSON.stringify({ text }),
   });
   if (!res.ok) skip(`Slack svarte ${res.status} ${res.statusText}`);
 } catch (err) {
@@ -71,7 +75,7 @@ try {
 }
 ```
 
-`JSON.stringify` håndterer norske tegn/anførselstegn i meldingsteksten trygt — ingen manuell JSON-bygging i Bash. Kallende agent sender ferdig Slack-mrkdwn-formatert tekst (`*fet*`, `<url|lenketekst>`) som ett quotet argument.
+`JSON.stringify` håndterer norske tegn/anførselstegn i meldingsteksten trygt — ingen manuell JSON-bygging i Bash. Kallende agent sender ferdig Slack-mrkdwn-formatert tekst (`*fet*`, `<url|lenketekst>`) som ett quotet argument — scriptet setter selv emoji- og navneprefikset foran (`username`/`icon_emoji`-feltene i `SENDERS` brukes ikke lenger i selve JSON-bodyen, kun til å bygge tekstprefikset, se korrigeringen over).
 
 ## 2. Avsender-mapping (i scriptet, se over)
 
@@ -148,5 +152,5 @@ Legg til én varslingssetning på slutten av hvert nummererte steg i "Agent-arbe
 
 ## Verifisering
 
-1. **Isolert scripttest** før agent-filene endres: `SLACK_WEBHOOK_URL` er allerede satt (punkt 4) — kjør `node scripts/notify-slack.mjs dev "Testmelding — ignorer."` og bekreft riktig navn/ikon i Slack. Gjenta for de fire andre senderne. Test feilveien: tom `SLACK_WEBHOOK_URL` og ukjent sender-nøkkel skal begge gi exit 0 + stderr-linje, ingen krasj. Bekreft at permission-regelen faktisk unngår prompt ved kall via Bash-verktøyet.
+1. **Isolert scripttest** før agent-filene endres: `SLACK_WEBHOOK_URL` er allerede satt (punkt 4) — kjør `node scripts/notify-slack.mjs dev "Testmelding — ignorer."` og bekreft at meldingen i Slack starter med `:hammer_and_wrench: *Utvikler Ulrik:*` (emoji-kortkode + fet navn i selve teksten, ikke som avatar/navn på meldingsboksen — se korrigeringen i "Valgt tilnærming"). Gjenta for de fire andre senderne. Test feilveien: tom `SLACK_WEBHOOK_URL` og ukjent sender-nøkkel skal begge gi exit 0 + stderr-linje, ingen krasj. Bekreft at permission-regelen faktisk unngår prompt ved kall via Bash-verktøyet.
 2. **Full trial på et trivielt issue**: kjør hele `CLAUDE.md`-flyten steg 1–6 på et lite issue og observer i Slack at meldingene ankommer i riktig rekkefølge og antall (jf. punkt 3), uten duplikater eller forsinkelse. Provoser gjerne én review-runde bevisst for å bekrefte at dev/reviewer sine runde-meldinger også trigges korrekt.
