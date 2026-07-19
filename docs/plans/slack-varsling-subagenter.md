@@ -1,6 +1,6 @@
 # Slack-varsling for agent-arbeidsflyten
 
-> **Status:** kode fra issue #34/PR #35 er merget og trial-kjørt (#36/PR #37), men trial-runden avdekket et reelt designfeil: **antakelsen i "Valgt tilnærming" om at `username`/`icon_emoji` kan overstyres per melding, stemmer ikke** for webhooks tilknyttet en Slack-app (se korrigert forklaring under). Alle meldinger ankom i Slack under appens egen faste identitet ("agents-chat-app", standardikon) i stedet for de fem persona-navnene/emojiene. Korrigert løsning (tekstprefiks, se punkt 1) er beskrevet under og spores som eget oppfølgingsissue. Statuslinjen oppdateres til "fullført" når fiksen er verifisert i Slack på nytt. Dette er en plan for utviklings-tooling, ikke en beskrivelse av gjeldende arkitektur — se `CLAUDE.md` for gjeldende agent-arbeidsflyt.
+> **Status:** fullført 2026-07-19. Implementert og merget via issue #34 → PR #35, trial-kjørt via #36 → PR #37 (som avdekket at `username`/`icon_emoji` ignoreres av Slack-app-tilknyttede webhooks, se korrigeringen i "Valgt tilnærming"), og fikset via issue #38 → PR #39 (avsenderidentitet flyttet til et emoji+fett-navn-prefiks i selve `text`-feltet). Bekreftet korrekt i Slack av bruker etter siste merge. Dette er en plan for utviklings-tooling, ikke en beskrivelse av gjeldende arkitektur — se `CLAUDE.md` for gjeldende agent-arbeidsflyt.
 
 ## Kontekst
 
