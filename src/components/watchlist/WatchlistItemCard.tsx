@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useWatchlist } from "../../context/WatchlistContext";
 import type { WatchlistItem, WatchlistStatus } from "../../types/watchlist";
 import { accentHueClasses } from "../../utils/accentHue";

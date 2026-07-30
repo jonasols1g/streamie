@@ -1,5 +1,5 @@
 import type { AriaAttributes } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink } from "react-router";
 
 const linkClassName = ({ isActive }: { isActive: boolean }) =>
   `flex flex-col items-center gap-1 px-4 py-2 text-xs font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${

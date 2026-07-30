@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router";
 import { Footer } from "./components/layout/Footer";
 import { NavBar } from "./components/layout/NavBar";
 import { WatchlistSaveErrorBanner } from "./components/watchlist/WatchlistSaveErrorBanner";
