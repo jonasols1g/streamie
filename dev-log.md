@@ -2,6 +2,11 @@
 
 Kort logg over hva som er gjort per dag. Nyeste øverst. Én oppføring per dag det er gjort arbeid — noen linjer, ikke en rapport. Detaljene hører hjemme i dokumentene i `docs/`; her står bare hva som skjedde og hva som er neste steg.
 
+## 2026-07-30
+
+- **Kun logo for strømmetjenester ved abonnement, kjøp/leie-label ellers** (issue #50 → PR #51, planlagt i Plan Mode sammen med bruker og opprettet direkte i Ready som veldefinert oppgave). `StreamingProvidersList` viste tidligere logo + tjenestenavn-tekst for alle tilbud uansett type; `StreamingOffer.type` (subscription/rent/buy/free, allerede hentet fra MOTN) ble kun brukt til dedupe og ellers forkastet. Ny oppførsel: tjenester med abonnement/gratis viser kun logo (`alt={providerName}`, ingen synlig navnetekst); tjenester som krever ekstra betaling viser logo + liten tekst under («Kjøp» / «Leie» / «Kjøp/leie», avhengig av hvilke betalte typer som finnes uten abonnement/gratis); tjenester uten `logoUrl` faller fortsatt tilbake til synlig navnetekst. Full agent-loop (`dev` → `reviewer` → `verifier`), verifisert manuelt mot produksjonsbygget med syntetiske MOTN-svar som dekket alle tre visningstilfellene samtidig. `docs/design.md` punkt 5 oppdatert til å beskrive ny visning.
+- **Reelt funn under review:** `npm audit --audit-level=high` feilet i CI-steget "Lint, enhetstester, audit og bygg" pga. 3 pre-eksisterende high-severity-sårbarheter (`brace-expansion`, `react-router`×2). Bekreftet identisk på siste `main`-commit før denne PR-en (ikke en regresjon). Etter avklaring med bruker: PR #51 ble likevel ført gjennom verifisering og merget (lint/enhetstester/E2E/bygg reelt grønt, kun audit-steget feilet), og et eget issue #52 ble opprettet i Backlog for å fikse sårbarhetene separat. Verifier fant i tillegg at CI (`bash -e`) stopper ved audit-feilen *før* build-steget kjøres — build ble derfor aldri kjørt i CI på denne PR-en og ble i stedet verifisert lokalt.
+
 ## 2026-07-25
 
 - **Sjuende kjøring av Del B-routinen** (feedback-skyagent): hentet samme 2 dokumenter fra `feedback`-collectionen som de seks foregående dagene (ingen nye siden forrige kjøring). Begge hoppet over igjen, ingen nytt issue/PR opprettet:
