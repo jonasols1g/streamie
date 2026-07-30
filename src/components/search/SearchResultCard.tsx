@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useWatchlist } from "../../context/WatchlistContext";
 import { WatchlistStarToggle } from "../watchlist/WatchlistStarToggle";
 import { PosterImage } from "../media/PosterImage";

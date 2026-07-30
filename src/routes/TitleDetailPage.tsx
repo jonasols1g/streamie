@@ -1,5 +1,5 @@
 import type { AriaAttributes } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router";
 import { ErrorMessage } from "../components/common/ErrorMessage";
 import { LoadingSpinner } from "../components/common/LoadingSpinner";
 import { GenreTags } from "../components/media/GenreTags";

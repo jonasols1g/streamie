@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { EmptyState } from "../components/common/EmptyState";
 import { WatchlistItemCard } from "../components/watchlist/WatchlistItemCard";
 import { WatchlistTabs } from "../components/watchlist/WatchlistTabs";
